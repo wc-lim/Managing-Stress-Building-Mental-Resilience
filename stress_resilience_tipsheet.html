@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Managing Stress, Building Mental Resilience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        @theme {
+            --color-bg: #0d1117;
+            --color-bg-deep: #070b0f;
+            --color-surface: #161d27;
+            --color-text: #e8f0fe;
+            --color-text-secondary: #a8bbd4;
+            --color-text-muted: #637d96;
+            --color-accent-1: #4fc3f7;
+            --color-accent-2: #81d4a0;
+            --color-accent-3: #b39ddb;
+            --color-glass-bg: rgba(255,255,255,0.05);
+            --color-glass-border: rgba(255,255,255,0.08);
+            --color-vignette: rgba(0,0,0,0.45);
+            --font-display: 'Cormorant', serif;
+            --font-body: 'Manrope', sans-serif;
+        }
+    </style>
+    <style>
+        :root { --color-bg: #0d1117; --color-text: #e8f0fe; --glow-color-rgb: 79,195,247; }
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { background: var(--color-bg); margin: 0; }
+        body { font-family: 'Manrope', sans-serif; color: var(--color-text); overflow: hidden; height: 100vh; width: 100vw; }
+        .deck { width: 100vw; height: 100vh; position: relative; }
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--color-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transform: scale(0.95); transition: opacity 0.7s ease, transform 0.7s ease; pointer-events: none; overflow: hidden; }
+        .slide.active { opacity: 1; transform: scale(1); pointer-events: all; }
+        .slide > .content { position: relative; z-index: 2; width: 100%; max-width: 1100px; padding: clamp(1.5rem, 3vw, 3.5rem); }
+        .nav-controls { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; z-index: 100; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 10px 24px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.08); }
+        .nav-btn { width: 38px; height: 38px; border: none; background: rgba(79,195,247,0.15); color: #4fc3f7; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.3s; }
+        .nav-btn:hover { background: rgba(79,195,247,0.3); }
+        .slide-dots { display: flex; gap: 7px; }
+        .slide-dots .dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.15); cursor: pointer; transition: background 0.3s, transform 0.3s; }
+        .slide-dots .dot.active { background: #4fc3f7; transform: scale(1.3); }
+        .slide-counter { font-size: 0.75rem; color: #637d96; min-width: 38px; text-align: center; font-family: 'Manrope', sans-serif; }
+        .reveal { opacity: 0; transform: translateY(20px); }
+        @keyframes float-slow { 0% { transform: translate(0,0) scale(1); } 25% { transform: translate(60px,-50px) scale(1.12); } 50% { transform: translate(-40px,40px) scale(0.9); } 75% { transform: translate(50px,20px) scale(1.08); } 100% { transform: translate(0,0) scale(1); } }
+        @keyframes float-drift { 0% { transform: translate(0,0) scale(1) rotate(0deg); } 33% { transform: translate(-50px,-60px) scale(1.15) rotate(3deg); } 66% { transform: translate(40px,30px) scale(0.88) rotate(-2deg); } 100% { transform: translate(0,0) scale(1) rotate(0deg); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+        @keyframes pulse-ring { 0%, 100% { box-shadow: 0 0 0 0 rgba(79,195,247,0.3); } 50% { box-shadow: 0 0 0 12px rgba(79,195,247,0); } }
+        .gradient-mesh { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); animation: float-slow 10s ease-in-out infinite; }
+        .blob:nth-child(2) { animation: float-drift 14s ease-in-out infinite; }
+        .blob:nth-child(3) { animation: float-slow 18s ease-in-out infinite reverse; }
+        .blob:nth-child(4) { animation: float-drift 22s ease-in-out infinite reverse; }
+        .slide::before { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); background-size: 256px 256px; opacity: 0.03; mix-blend-mode: overlay; }
+        .slide::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at center, transparent 50%, var(--color-vignette) 100%); }
+        .text-glow { text-shadow: 0 0 20px rgba(79,195,247,0.5), 0 0 40px rgba(79,195,247,0.2); }
+        .green-glow { text-shadow: 0 0 20px rgba(129,212,160,0.5), 0 0 40px rgba(129,212,160,0.2); }
+        @keyframes glow-pulse { 0%, 100% { text-shadow: 0 0 20px rgba(79,195,247,0.5); } 50% { text-shadow: 0 0 30px rgba(79,195,247,0.9), 0 0 60px rgba(79,195,247,0.4); } }
+        .glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
+        .check-item { display: flex; align-items: center; gap: 14px; padding: 12px 18px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; cursor: pointer; transition: all 0.3s; }
+        .check-item:hover { background: rgba(79,195,247,0.08); border-color: rgba(79,195,247,0.2); }
+        .check-item.checked { background: rgba(129,212,160,0.08); border-color: rgba(129,212,160,0.25); }
+        .check-box { width: 24px; height: 24px; border-radius: 6px; border: 2px solid rgba(79,195,247,0.5); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s; }
+        .check-item.checked .check-box { background: #81d4a0; border-color: #81d4a0; }
+        .check-label { font-size: 0.9rem; color: #a8bbd4; font-family: 'Manrope', sans-serif; font-weight: 500; }
+        .check-item.checked .check-label { color: #e8f0fe; }
+        #survival-score { font-family: 'Cormorant', serif; font-size: 3rem; font-weight: 700; color: #4fc3f7; }
+        .table-header { background: rgba(79,195,247,0.12); }
+        .table-row-even { background: rgba(255,255,255,0.02); }
+        .table-row-odd { background: rgba(255,255,255,0.04); }
+        #breath-circle { width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(79,195,247,0.3), rgba(79,195,247,0.05)); border: 2px solid rgba(79,195,247,0.5); display: flex; align-items: center; justify-content: center; transition: transform 4s ease-in-out; margin: 0 auto; }
+        #breath-text { font-family: 'Manrope', sans-serif; font-size: 0.8rem; color: #4fc3f7; font-weight: 600; text-align: center; }
+        .breath-step { padding: 10px 16px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); text-align: center; transition: all 0.5s; }
+        .breath-step.active-step { background: rgba(79,195,247,0.15); border-color: rgba(79,195,247,0.4); }
+        .breath-step span { font-size: 0.75rem; font-weight: 600; color: #637d96; text-transform: uppercase; letter-spacing: 0.08em; display: block; }
+        .breath-step .count { font-family: 'Cormorant', serif; font-size: 2rem; font-weight: 700; color: #4fc3f7; }
+        .deco-shape { position: absolute; border-radius: 50%; pointer-events: none; }
+
+        /* PMR styles */
+        .pmr-body-part { cursor: pointer; transition: all 0.3s; }
+        .pmr-body-part:hover { opacity: 0.85; }
+        .pmr-body-part.active-part { filter: drop-shadow(0 0 8px rgba(79,195,247,0.9)); }
+        .pmr-body-part.done-part { opacity: 0.4; }
+        @keyframes pmr-pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+        .pmr-body-part.active-part rect, .pmr-body-part.active-part ellipse, .pmr-body-part.active-part path { animation: pmr-pulse 1s ease-in-out infinite; }
+
+        /* 543 reframe interactive */
+        .reframe-input { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 14px; color: #e8f0fe; font-family: 'Manrope', sans-serif; font-size: 0.85rem; width: 100%; outline: none; transition: border-color 0.3s; }
+        .reframe-input:focus { border-color: rgba(79,195,247,0.5); }
+        .reframe-input::placeholder { color: #637d96; }
+        .reframe-done { background: rgba(129,212,160,0.15); border-color: rgba(129,212,160,0.4) !important; }
+    </style>
+</head>
+<body>
+
+<div class="mouse-spotlight" style="position:fixed;inset:0;z-index:99;pointer-events:none;"></div>
+
+<div class="deck">
+
+    <!-- SLIDE 1: TITLE -->
+    <div class="slide slide-1 active" data-slide="1">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:500px;height:500px;top:-120px;right:-100px;background:#4fc3f7;opacity:0.12;"></div>
+            <div class="blob" style="width:350px;height:350px;bottom:-80px;left:-60px;background:#81d4a0;opacity:0.10;"></div>
+            <div class="blob" style="width:250px;height:250px;top:45%;left:20%;background:#b39ddb;opacity:0.08;"></div>
+            <div class="blob" style="width:180px;height:180px;top:20%;left:45%;background:#4fc3f7;opacity:0.07;"></div>
+        </div>
+        <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;"></canvas>
+        <div class="content text-center">
+            <div style="font-size:80px;animation:float 3s ease-in-out infinite;margin-bottom:1rem;" class="reveal">🧠</div>
+            <h1 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(2.2rem,5.5vw,4.2rem);font-weight:700;background:linear-gradient(135deg,#4fc3f7,#81d4a0,#b39ddb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:1.2rem;">Managing Stress,<br>Building Mental Resilience</h1>
+            <p class="reveal" style="font-size:clamp(0.8rem,1.4vw,1rem);color:#637d96;letter-spacing:5px;text-transform:uppercase;font-weight:500;margin-bottom:0.6rem;">In a High-Stakes Economy</p>
+            <p class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1rem,2vw,1.4rem);font-weight:600;color:#81d4a0;letter-spacing:3px;text-transform:uppercase;margin-bottom:2rem;">TiP Sheets</p>
+            <div class="reveal" style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+                <div style="display:flex;align-items:center;gap:8px;background:rgba(79,195,247,0.07);border:1px solid rgba(79,195,247,0.18);border-radius:12px;padding:10px 24px;">
+                    <span style="font-size:0.72rem;color:#637d96;text-transform:uppercase;letter-spacing:3px;font-weight:600;">Date</span>
+                    <span style="font-size:0.88rem;color:#e8f0fe;font-weight:600;margin-left:8px;">18th April 2026</span>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px 32px;text-align:center;">
+                    <div style="font-size:0.65rem;color:#637d96;text-transform:uppercase;letter-spacing:4px;font-weight:600;margin-bottom:6px;">Speaker</div>
+                    <div style="font-family:'Cormorant',serif;font-size:clamp(1.1rem,2.2vw,1.5rem);font-weight:700;color:#e8f0fe;margin-bottom:4px;">Mr Lim Wooi Chin</div>
+                    <div style="font-size:0.78rem;color:#a8bbd4;font-weight:500;letter-spacing:1px;">Malaysian Licensed Psychology Counsellor</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: THE INVISIBLE WEIGHT -->
+    <div class="slide slide-2" data-slide="2">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:400px;height:400px;top:-100px;right:-80px;background:#4fc3f7;opacity:0.08;"></div>
+            <div class="blob" style="width:280px;height:280px;bottom:-60px;left:-40px;background:#81d4a0;opacity:0.07;"></div>
+        </div>
+        <div class="content">
+            <p class="reveal" style="font-size:0.75rem;color:#4fc3f7;text-transform:uppercase;letter-spacing:5px;font-weight:600;margin-bottom:0.5rem;">The Hidden Reality</p>
+            <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;color:#e8f0fe;margin-bottom:1.8rem;line-height:1.2;">You Are Carrying More<br>Than You Realise</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:4px solid #4fc3f7;border-radius:12px;padding:20px;">
+                    <div style="font-size:2.2rem;font-weight:800;font-family:'Cormorant',serif;color:#4fc3f7;" class="text-glow" data-count="77">0</div><span style="font-size:0.65rem;color:#637d96;text-transform:uppercase;letter-spacing:3px;">%</span>
+                    <p style="font-size:0.82rem;color:#a8bbd4;margin-top:4px;font-weight:500;">of adults report physical symptoms of stress — APA 2024</p>
+                </div>
+                <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:4px solid #81d4a0;border-radius:12px;padding:20px;">
+                    <div style="font-size:2.2rem;font-weight:800;font-family:'Cormorant',serif;color:#81d4a0;" class="green-glow" data-count="60">0</div><span style="font-size:0.65rem;color:#637d96;text-transform:uppercase;letter-spacing:3px;">%</span>
+                    <p style="font-size:0.82rem;color:#a8bbd4;margin-top:4px;font-weight:500;">of 35–50 year olds are in "persistent stress" — Harvard Health</p>
+                </div>
+                <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:4px solid #b39ddb;border-radius:12px;padding:20px;">
+                    <div style="font-size:2.2rem;font-weight:800;font-family:'Cormorant',serif;color:#b39ddb;">3×</div>
+                    <p style="font-size:0.82rem;color:#a8bbd4;margin-top:4px;font-weight:500;">higher cardiovascular risk from chronic untreated stress</p>
+                </div>
+                <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:4px solid #ffcc80;border-radius:12px;padding:20px;">
+                    <div style="font-size:2.2rem;font-weight:800;font-family:'Cormorant',serif;color:#ffcc80;">$322B</div>
+                    <p style="font-size:0.82rem;color:#a8bbd4;margin-top:4px;font-weight:500;">annual global cost of workplace burnout — Gallup 2023</p>
+                </div>
+            </div>
+            <p class="reveal" style="font-size:0.78rem;color:#637d96;margin-top:1.2rem;font-style:italic;">💡 So What? For a 40-year-old juggling a mortgage, career peak, and parenting — stress is not a weakness. It is a structural condition requiring strategy.</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide slide-3" data-slide="3">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:380px;height:380px;top:-90px;left:-70px;background:#b39ddb;opacity:0.09;"></div>
+            <div class="blob" style="width:260px;height:260px;bottom:-50px;right:-40px;background:#4fc3f7;opacity:0.07;"></div>
+        </div>
+        <div class="content">
+            <p class="reveal" style="font-size:0.75rem;color:#b39ddb;text-transform:uppercase;letter-spacing:5px;font-weight:600;margin-bottom:0.5rem;">The Biology</p>
+            <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,3.8vw,2.8rem);font-weight:700;color:#e8f0fe;margin-bottom:1.5rem;">Your Brain Cannot Tell the<br>Difference Between a Tiger &amp; a Deadline</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+                <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px;text-align:center;">
+                    <div style="font-size:2rem;margin-bottom:8px;">⚡</div>
+                    <h4 style="font-family:'Cormorant',serif;font-size:1.1rem;font-weight:700;color:#4fc3f7;margin-bottom:6px;">Cortisol Spike</h4>
+                    <p style="font-size:0.75rem;color:#a8bbd4;line-height:1.5;">Floods bloodstream within 15 seconds of perceived threat. Suppresses immune function, digestion, and rational thought.</p>
+                </div>
+                <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px;text-align:center;">
+                    <div style="font-size:2rem;margin-bottom:8px;">🔥</div>
+                    <h4 style="font-family:'Cormorant',serif;font-size:1.1rem;font-weight:700;color:#81d4a0;margin-bottom:6px;">Amygdala Hijack</h4>
+                    <p style="font-size:0.75rem;color:#a8bbd4;line-height:1.5;">Prefrontal cortex (decision-making) goes offline. Reactive, emotional responses dominate. You cannot think clearly under chronic stress.</p>
+                </div>
+                <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px;text-align:center;">
+                    <div style="font-size:2rem;margin-bottom:8px;">🔄</div>
+                    <h4 style="font-family:'Cormorant',serif;font-size:1.1rem;font-weight:700;color:#b39ddb;margin-bottom:6px;">The Loop</h4>
+                    <p style="font-size:0.75rem;color:#a8bbd4;line-height:1.5;">Without recovery, the HPA axis gets stuck "on." After 90 days of chronic stress, the brain physically rewires itself for anxiety.</p>
+                </div>
+            </div>
+            <div class="reveal" style="margin-top:1.2rem;background:rgba(179,157,219,0.08);border:1px solid rgba(179,157,219,0.2);border-radius:10px;padding:12px 18px;font-size:0.8rem;color:#a8bbd4;">
+                💡 <strong style="color:#e8f0fe;">So What?</strong> That irritability you feel with your kids at 7pm? That's cortisol — not a personality flaw. It is biology, and it is reversible.
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: STRESS AUDIT -->
+    <div class="slide slide-4" data-slide="4">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:450px;height:450px;top:-110px;right:-90px;background:#4fc3f7;opacity:0.10;"></div>
+            <div class="blob" style="width:300px;height:300px;bottom:-70px;left:-50px;background:#81d4a0;opacity:0.08;"></div>
+        </div>
+        <canvas class="particle-canvas-ambient" style="position:absolute;inset:0;z-index:1;"></canvas>
+        <div class="content">
+            <p class="reveal" style="font-size:0.75rem;color:#81d4a0;text-transform:uppercase;letter-spacing:5px;font-weight:600;margin-bottom:0.5rem;">Activity · Self-Assessment</p>
+            <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;color:#e8f0fe;margin-bottom:0.5rem;">The Quick Stress Audit</h2>
+            <p class="reveal" style="font-size:0.85rem;color:#a8bbd4;margin-bottom:1.4rem;">Answer honestly. Click each statement that applies to you <em>in the past 2 weeks</em>. No judgment — just data.</p>
+            <div id="audit-list" style="display:flex;flex-direction:column;gap:10px;">
+                <div class="check-item reveal" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-label">1. I regularly feel tired even after a full night's sleep.</span></div>
+                <div class="check-item reveal" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-label">2. I feel irritable or short-tempered more often than I'd like to admit.</span></div>
+                <div class="check-item reveal" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-label">3. I have difficulty switching off — my mind keeps running at night.</span></div>
+                <div class="check-item reveal" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-label">4. I feel like I'm managing everything but genuinely enjoying nothing.</span></div>
+                <div class="check-item reveal" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-label">5. My body gives me signals (tension, headaches, gut issues) that I usually ignore.</span></div>
+            </div>
+            <div class="reveal" style="margin-top:1.2rem;display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 20px;">
+                <div id="survival-score">0</div>
+                <div>
+                    <div style="font-size:0.8rem;font-weight:700;color:#e8f0fe;" id="score-label">Select any that apply</div>
+                    <div style="font-size:0.72rem;color:#637d96;" id="score-desc">3+ checked = you may be in Survival Mode</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: IMPACT TABLE -->
+    <div class="slide slide-5" data-slide="5">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:360px;height:360px;top:-80px;left:-60px;background:#4fc3f7;opacity:0.08;"></div>
+            <div class="blob" style="width:240px;height:240px;bottom:-50px;right:-30px;background:#ff8a65;opacity:0.08;"></div>
+        </div>
+        <div class="content">
+            <p class="reveal" style="font-size:0.75rem;color:#ff8a65;text-transform:uppercase;letter-spacing:5px;font-weight:600;margin-bottom:0.5rem;">The Impact Map</p>
+            <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:700;color:#e8f0fe;margin-bottom:1.2rem;">Short-Term Signals → Long-Term Consequences</h2>
+            <div class="reveal" style="border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">
+                <table style="width:100%;border-collapse:collapse;font-family:'Manrope',sans-serif;">
+                    <thead>
+                        <tr style="background:rgba(79,195,247,0.12);">
+                            <th style="padding:11px 16px;text-align:left;font-size:0.72rem;color:#4fc3f7;text-transform:uppercase;letter-spacing:3px;font-weight:600;border-right:1px solid rgba(255,255,255,0.06);">Category</th>
+                            <th style="padding:11px 16px;text-align:left;font-size:0.72rem;color:#4fc3f7;text-transform:uppercase;letter-spacing:3px;font-weight:600;border-right:1px solid rgba(255,255,255,0.06);">⚡ Short-Term (Days–Weeks)</th>
+                            <th style="padding:11px 16px;text-align:left;font-size:0.72rem;color:#ff8a65;text-transform:uppercase;letter-spacing:3px;font-weight:600;">🔴 Long-Term (Months–Years)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(255,255,255,0.03);border-top:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:11px 16px;font-size:0.75rem;color:#81d4a0;font-weight:700;border-right:1px solid rgba(255,255,255,0.06);">🏋️ Physical</td>
+                            <td style="padding:11px 16px;font-size:0.78rem;color:#a8bbd4;border-right:1px solid rgba(255,255,255,0.06);">Muscle tension, headaches, elevated heart rate, shallow breathing</td>
+                            <td style="padding:11px 16px;font-size:0.78rem;color:#a8bbd4;">Cardiovascular disease, weakened immune system, chronic back/neck pain, hormonal imbalance</td>
+                        </tr>
+                        <tr style="background:rgba(255,255,255,0.015);border-top:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:11px 16px;font-size:0.75rem;color:#4fc3f7;font-weight:700;border-right:1px solid rgba(255,255,255,0.06);">🧠 Mental</td>
+                            <td style="padding:11px 16px;font-size:0.78rem;color:#a8bbd4;border-right:1px solid rgba(255,255,255,0.06);">Irritability, poor focus, racing thoughts, forgetfulness</td>
+                            <td style="padding:11px 16px;font-size:0.78rem;color:#a8bbd4;">Anxiety disorders, clinical depression, memory loss, burnout</td>
+                        </tr>
+                        <tr style="background:rgba(255,255,255,0.03);border-top:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:11px 16px;font-size:0.75rem;color:#b39ddb;font-weight:700;border-right:1px solid rgba(255,255,255,0.06);">❤️ Relational</td>
+                            <td style="padding:11px 16px;font-size:0.78rem;color:#a8bbd4;border-right:1px solid rgba(255,255,255,0.06);">Withdrawal, communication breakdowns, low patience with family</td>
+                            <td style="padding:11px 16px;font-size:0.78rem;color:#a8bbd4;">Relationship erosion, social isolation</td>
+                        </tr>
+                        <tr style="background:rgba(255,255,255,0.015);border-top:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:11px 16px;font-size:0.75rem;color:#ffcc80;font-weight:700;border-right:1px solid rgba(255,255,255,0.06);">💰 Financial</td>
+                            <td style="padding:11px 16px;font-size:0.78rem;color:#a8bbd4;border-right:1px solid rgba(255,255,255,0.06);">Impulsive decisions, reduced productivity, poor risk assessment</td>
+                            <td style="padding:11px 16px;font-size:0.78rem;color:#a8bbd4;">Career plateau, medical costs, poor investment choices</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="reveal" style="font-size:0.75rem;color:#637d96;margin-top:0.9rem;font-style:italic;">💡 That headache today is a warning signal. Left unmanaged, the same system produces the heart attack at 52.</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 6: RESILIENCE FRAMEWORK — talk mode          -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide slide-6" data-slide="6">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:420px;height:420px;top:-100px;right:-80px;background:#81d4a0;opacity:0.10;"></div>
+            <div class="blob" style="width:280px;height:280px;bottom:-60px;left:-50px;background:#4fc3f7;opacity:0.08;"></div>
+        </div>
+        <div class="content">
+            <p class="reveal" style="font-size:0.75rem;color:#81d4a0;text-transform:uppercase;letter-spacing:5px;font-weight:600;margin-bottom:0.5rem;">The Big Idea</p>
+            <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,3.8vw,2.8rem);font-weight:700;color:#e8f0fe;margin-bottom:0.5rem;">Resilience is Not About<br>Being Tough. It's About Bouncing Back.</h2>
+            <p class="reveal" style="font-size:0.88rem;color:#a8bbd4;margin-bottom:1.4rem;line-height:1.6;">Think of resilience like a rubber band. A tough person never bends. A resilient person bends — and snaps back. We want to be the rubber band.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+                <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(79,195,247,0.2);border-radius:14px;padding:22px;text-align:center;">
+                    <div style="font-size:2.5rem;margin-bottom:10px;">🫁</div>
+                    <h3 style="font-family:'Cormorant',serif;font-size:1.3rem;font-weight:700;color:#4fc3f7;margin-bottom:8px;">Layer 1 — Body</h3>
+                    <p style="font-size:0.78rem;color:#a8bbd4;line-height:1.6;">How you breathe, move, and sleep. <br>Your body is the foundation — if the body is exhausted, nothing else works well.</p>
+                    <div style="margin-top:12px;font-size:0.7rem;color:#4fc3f7;background:rgba(79,195,247,0.1);border-radius:8px;padding:6px;">Tools: Breath · Movement · Sleep</div>
+                </div>
+                <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(129,212,160,0.2);border-radius:14px;padding:22px;text-align:center;">
+                    <div style="font-size:2.5rem;margin-bottom:10px;">🧠</div>
+                    <h3 style="font-family:'Cormorant',serif;font-size:1.3rem;font-weight:700;color:#81d4a0;margin-bottom:8px;">Layer 2 — Mind</h3>
+                    <p style="font-size:0.78rem;color:#a8bbd4;line-height:1.6;">How you think about what happens to you. <br>80% of stress is how we interpret a situation — not the situation itself.</p>
+                    <div style="margin-top:12px;font-size:0.7rem;color:#81d4a0;background:rgba(129,212,160,0.1);border-radius:8px;padding:6px;">Tools: Reframing · Self-talk</div>
+                </div>
+                <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(179,157,219,0.2);border-radius:14px;padding:22px;text-align:center;">
+                    <div style="font-size:2.5rem;margin-bottom:10px;">🏡</div>
+                    <h3 style="font-family:'Cormorant',serif;font-size:1.3rem;font-weight:700;color:#b39ddb;margin-bottom:8px;">Layer 3 — Space</h3>
+                    <p style="font-size:0.78rem;color:#a8bbd4;line-height:1.6;">Where you live and rest. <br>Your home is either charging you up or draining you — even when you're not aware of it.</p>
+                    <div style="margin-top:12px;font-size:0.7rem;color:#b39ddb;background:rgba(179,157,219,0.1);border-radius:8px;padding:6px;">Tools: Environment · Design</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size:0.78rem;color:#637d96;margin-top:1rem;font-style:italic;">💡 None of these layers work alone. But together, they reinforce each other — every single day.</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 7A: BOX BREATHING (was slide 7 part 1)       -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide slide-7" data-slide="7">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:440px;height:440px;top:-110px;right:-90px;background:#4fc3f7;opacity:0.11;"></div>
+            <div class="blob" style="width:320px;height:320px;bottom:-70px;left:-60px;background:#81d4a0;opacity:0.09;"></div>
+        </div>
+        <canvas class="particle-canvas-ambient" style="position:absolute;inset:0;z-index:1;"></canvas>
+        <div class="content">
+            <p class="reveal" style="font-size:0.75rem;color:#4fc3f7;text-transform:uppercase;letter-spacing:5px;font-weight:600;margin-bottom:0.4rem;">Activity · Do It Now · 3 Minutes</p>
+            <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,3.8vw,2.8rem);font-weight:700;color:#e8f0fe;margin-bottom:0.3rem;">Box Breathing</h2>
+            <p class="reveal" style="font-size:0.85rem;color:#a8bbd4;margin-bottom:1.2rem;">Breathe in a square — 4 counts each side. Used by Navy SEALs to calm down under pressure. You can do this anywhere, anytime — even in a traffic jam.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;">
+                <div class="reveal" style="text-align:center;">
+                    <div id="breath-circle">
+                        <div id="breath-text">Press<br>Start</div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0;">
+                        <div class="breath-step" id="step-inhale"><span>Breathe In</span><div class="count">4</div></div>
+                        <div class="breath-step" id="step-hold1"><span>Hold</span><div class="count">4</div></div>
+                        <div class="breath-step" id="step-exhale"><span>Breathe Out</span><div class="count">4</div></div>
+                        <div class="breath-step" id="step-hold2"><span>Hold</span><div class="count">4</div></div>
+                    </div>
+                    <button onclick="startBreathing()" id="breath-btn" style="width:100%;padding:10px;background:rgba(79,195,247,0.15);border:1px solid rgba(79,195,247,0.3);border-radius:8px;color:#4fc3f7;font-family:'Manrope',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.3s;">▶ Start Breathing</button>
+                </div>
+                <div class="reveal" style="display:flex;flex-direction:column;gap:12px;">
+                    <div style="background:rgba(79,195,247,0.06);border:1px solid rgba(79,195,247,0.15);border-radius:12px;padding:16px;">
+                        <div style="font-size:0.7rem;color:#4fc3f7;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">Why it works</div>
+                        <p style="font-size:0.8rem;color:#a8bbd4;line-height:1.6;">When you slow your breathing on purpose, your body gets a signal: <em>"The danger is over. It is safe to relax."</em> Your heart rate drops. Your shoulders loosen. Your thinking clears — in under 60 seconds.</p>
+                    </div>
+                    <div style="background:rgba(129,212,160,0.06);border:1px solid rgba(129,212,160,0.15);border-radius:12px;padding:14px;">
+                        <div style="font-size:0.7rem;color:#81d4a0;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">How to use it daily</div>
+                        <ul style="font-size:0.78rem;color:#a8bbd4;line-height:1.8;padding-left:16px;margin:0;">
+                            <li>Before a stressful meeting</li>
+                            <li>In the car before going home</li>
+                            <li>Right after you wake up</li>
+                            <li>Whenever you feel tension building</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 7B: 5-4-3 REFRAME (was slide 7 part 2) — interactive -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide slide-8" data-slide="8">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:400px;height:400px;top:-100px;left:-80px;background:#81d4a0;opacity:0.10;"></div>
+            <div class="blob" style="width:280px;height:280px;bottom:-60px;right:-50px;background:#b39ddb;opacity:0.08;"></div>
+        </div>
+        <div class="content">
+            <p class="reveal" style="font-size:0.75rem;color:#81d4a0;text-transform:uppercase;letter-spacing:5px;font-weight:600;margin-bottom:0.4rem;">Activity · Try It Now · 2 Minutes</p>
+            <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,3.8vw,2.8rem);font-weight:700;color:#e8f0fe;margin-bottom:0.3rem;">The 5-4-3 Reframe</h2>
+            <p class="reveal" style="font-size:0.85rem;color:#a8bbd4;margin-bottom:1rem;">When your mind is running wild, this pulls you back to the present. Type or think your answers below — no one else sees this.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+                <!-- Step 1 -->
+                <div class="reveal" style="background:rgba(79,195,247,0.06);border:1px solid rgba(79,195,247,0.2);border-radius:14px;padding:18px;">
+                    <div style="font-size:2rem;text-align:center;margin-bottom:8px;">👀</div>
+                    <div style="font-size:0.7rem;color:#4fc3f7;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;text-align:center;">Step 1 · 5 Things You See</div>
+                    <p style="font-size:0.75rem;color:#637d96;margin-bottom:10px;text-align:center;font-style:italic;">Look around right now. What do you see?</p>
+                    <div style="display:flex;flex-direction:column;gap:6px;" id="see-inputs">
+                        <input class="reframe-input" placeholder="I see..." oninput="checkReframe()" />
+                        <input class="reframe-input" placeholder="I see..." oninput="checkReframe()" />
+                        <input class="reframe-input" placeholder="I see..." oninput="checkReframe()" />
+                        <input class="reframe-input" placeholder="I see..." oninput="checkReframe()" />
+                        <input class="reframe-input" placeholder="I see..." oninput="checkReframe()" />
+                    </div>
+                </div>
+                <!-- Step 2 -->
+                <div class="reveal" style="background:rgba(129,212,160,0.06);border:1px solid rgba(129,212,160,0.2);border-radius:14px;padding:18px;">
+                    <div style="font-size:2rem;text-align:center;margin-bottom:8px;">🌿</div>
+                    <div style="font-size:0.7rem;color:#81d4a0;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;text-align:center;">Step 2 · 4 Stable Things</div>
+                    <p style="font-size:0.75rem;color:#637d96;margin-bottom:10px;text-align:center;font-style:italic;">Name things in your life that are okay right now.</p>
+                    <div style="display:flex;flex-direction:column;gap:6px;" id="stable-inputs">
+                        <input class="reframe-input" placeholder="e.g. My health, my child..." oninput="checkReframe()" />
+                        <input class="reframe-input" placeholder="e.g. My job, my home..." oninput="checkReframe()" />
+                        <input class="reframe-input" placeholder="Something good today..." oninput="checkReframe()" />
+                        <input class="reframe-input" placeholder="One more thing..." oninput="checkReframe()" />
+                    </div>
+                    <div style="margin-top:10px;font-size:0.72rem;color:#637d96;font-style:italic;">Not everything needs to be perfect. Just stable is enough.</div>
+                </div>
+                <!-- Step 3 -->
+                <div class="reveal" style="background:rgba(179,157,219,0.06);border:1px solid rgba(179,157,219,0.2);border-radius:14px;padding:18px;">
+                    <div style="font-size:2rem;text-align:center;margin-bottom:8px;">💬</div>
+                    <div style="font-size:0.7rem;color:#b39ddb;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;text-align:center;">Step 3 · Say This Out Loud</div>
+                    <p style="font-size:0.75rem;color:#637d96;margin-bottom:12px;text-align:center;font-style:italic;">Read this quietly to yourself. Mean it.</p>
+                    <div style="background:rgba(179,157,219,0.12);border:1px solid rgba(179,157,219,0.3);border-radius:10px;padding:14px;text-align:center;">
+                        <p style="font-family:'Cormorant',serif;font-size:1.05rem;font-weight:600;color:#e8f0fe;line-height:1.6;margin-bottom:10px;">"I have handled hard things before.<br>This too is workable."</p>
+                        <button onclick="markAffirmationDone(this)" style="background:rgba(179,157,219,0.15);border:1px solid rgba(179,157,219,0.3);border-radius:8px;color:#b39ddb;font-family:'Manrope',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;padding:8px 16px;transition:all 0.3s;">✓ I said it</button>
+                    </div>
+                    <div id="reframe-complete" style="display:none;margin-top:14px;background:rgba(129,212,160,0.12);border:1px solid rgba(129,212,160,0.3);border-radius:10px;padding:12px;text-align:center;">
+                        <div style="font-size:1.4rem;margin-bottom:4px;">✅</div>
+                        <p style="font-size:0.8rem;color:#81d4a0;font-weight:600;">Well done. You just anchored your mind back to reality. That is a skill you can use anywhere.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 8 (NEW): PROGRESSIVE MUSCLE RELAXATION       -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide slide-9" data-slide="9">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:400px;height:400px;top:-100px;right:-80px;background:#b39ddb;opacity:0.10;"></div>
+            <div class="blob" style="width:280px;height:280px;bottom:-60px;left:-50px;background:#4fc3f7;opacity:0.08;"></div>
+        </div>
+        <div class="content">
+            <p class="reveal" style="font-size:0.75rem;color:#b39ddb;text-transform:uppercase;letter-spacing:5px;font-weight:600;margin-bottom:0.3rem;">Activity · Body Release · 5 Minutes</p>
+            <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:700;color:#e8f0fe;margin-bottom:0.2rem;">Progressive Muscle Relaxation</h2>
+            <p class="reveal" style="font-size:0.8rem;color:#a8bbd4;margin-bottom:0.9rem;">Stress hides in your muscles. This exercise finds it and releases it — one body part at a time. <strong style="color:#e8f0fe;">Click each part</strong> as you work through it.</p>
+            <div style="display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start;">
+                <!-- Body SVG illustration -->
+                <div class="reveal" style="text-align:center;">
+                    <svg id="pmr-svg" viewBox="0 0 180 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:180px;max-height:360px;">
+                        <!-- HEAD -->
+                        <g class="pmr-body-part" id="part-head" onclick="selectPMRPart('head')" data-index="0">
+                            <ellipse cx="90" cy="38" rx="28" ry="32" fill="rgba(79,195,247,0.18)" stroke="#4fc3f7" stroke-width="1.5"/>
+                            <text x="90" y="43" text-anchor="middle" font-family="Manrope" font-size="11" fill="#4fc3f7" font-weight="600">Face</text>
+                        </g>
+                        <!-- NECK -->
+                        <g class="pmr-body-part" id="part-neck" onclick="selectPMRPart('neck')" data-index="1">
+                            <rect x="78" y="70" width="24" height="20" rx="4" fill="rgba(129,212,160,0.18)" stroke="#81d4a0" stroke-width="1.5"/>
+                            <text x="90" y="84" text-anchor="middle" font-family="Manrope" font-size="9" fill="#81d4a0" font-weight="600">Neck</text>
+                        </g>
+                        <!-- SHOULDERS -->
+                        <g class="pmr-body-part" id="part-shoulders" onclick="selectPMRPart('shoulders')" data-index="2">
+                            <rect x="30" y="90" width="120" height="22" rx="11" fill="rgba(179,157,219,0.18)" stroke="#b39ddb" stroke-width="1.5"/>
+                            <text x="90" y="105" text-anchor="middle" font-family="Manrope" font-size="10" fill="#b39ddb" font-weight="600">Shoulders</text>
+                        </g>
+                        <!-- CHEST -->
+                        <g class="pmr-body-part" id="part-chest" onclick="selectPMRPart('chest')" data-index="3">
+                            <rect x="55" y="112" width="70" height="45" rx="8" fill="rgba(79,195,247,0.14)" stroke="#4fc3f7" stroke-width="1.5"/>
+                            <text x="90" y="138" text-anchor="middle" font-family="Manrope" font-size="10" fill="#4fc3f7" font-weight="600">Chest</text>
+                        </g>
+                        <!-- ARMS L -->
+                        <g class="pmr-body-part" id="part-arms" onclick="selectPMRPart('arms')" data-index="4">
+                            <rect x="18" y="112" width="32" height="70" rx="10" fill="rgba(255,204,128,0.16)" stroke="#ffcc80" stroke-width="1.5"/>
+                            <text x="34" y="150" text-anchor="middle" font-family="Manrope" font-size="9" fill="#ffcc80" font-weight="600">Arms</text>
+                            <!-- ARMS R -->
+                            <rect x="130" y="112" width="32" height="70" rx="10" fill="rgba(255,204,128,0.16)" stroke="#ffcc80" stroke-width="1.5"/>
+                        </g>
+                        <!-- ABDOMEN -->
+                        <g class="pmr-body-part" id="part-abdomen" onclick="selectPMRPart('abdomen')" data-index="5">
+                            <rect x="55" y="158" width="70" height="42" rx="8" fill="rgba(129,212,160,0.14)" stroke="#81d4a0" stroke-width="1.5"/>
+                            <text x="90" y="182" text-anchor="middle" font-family="Manrope" font-size="10" fill="#81d4a0" font-weight="600">Abdomen</text>
+                        </g>
+                        <!-- HANDS -->
+                        <g class="pmr-body-part" id="part-hands" onclick="selectPMRPart('hands')" data-index="6">
+                            <ellipse cx="34" cy="198" rx="14" ry="12" fill="rgba(239,154,154,0.16)" stroke="#ef9a9a" stroke-width="1.5"/>
+                            <text x="34" y="202" text-anchor="middle" font-family="Manrope" font-size="8" fill="#ef9a9a" font-weight="600">Hands</text>
+                            <ellipse cx="146" cy="198" rx="14" ry="12" fill="rgba(239,154,154,0.16)" stroke="#ef9a9a" stroke-width="1.5"/>
+                        </g>
+                        <!-- THIGHS -->
+                        <g class="pmr-body-part" id="part-thighs" onclick="selectPMRPart('thighs')" data-index="7">
+                            <rect x="57" y="202" width="30" height="60" rx="8" fill="rgba(179,157,219,0.16)" stroke="#b39ddb" stroke-width="1.5"/>
+                            <rect x="93" y="202" width="30" height="60" rx="8" fill="rgba(179,157,219,0.16)" stroke="#b39ddb" stroke-width="1.5"/>
+                            <text x="90" y="235" text-anchor="middle" font-family="Manrope" font-size="9" fill="#b39ddb" font-weight="600">Thighs</text>
+                        </g>
+                        <!-- CALVES -->
+                        <g class="pmr-body-part" id="part-calves" onclick="selectPMRPart('calves')" data-index="8">
+                            <rect x="59" y="264" width="26" height="55" rx="8" fill="rgba(79,195,247,0.14)" stroke="#4fc3f7" stroke-width="1.5"/>
+                            <rect x="95" y="264" width="26" height="55" rx="8" fill="rgba(79,195,247,0.14)" stroke="#4fc3f7" stroke-width="1.5"/>
+                            <text x="90" y="296" text-anchor="middle" font-family="Manrope" font-size="9" fill="#4fc3f7" font-weight="600">Calves</text>
+                        </g>
+                        <!-- FEET -->
+                        <g class="pmr-body-part" id="part-feet" onclick="selectPMRPart('feet')" data-index="9">
+                            <ellipse cx="72" cy="332" rx="18" ry="10" fill="rgba(129,212,160,0.16)" stroke="#81d4a0" stroke-width="1.5"/>
+                            <ellipse cx="108" cy="332" rx="18" ry="10" fill="rgba(129,212,160,0.16)" stroke="#81d4a0" stroke-width="1.5"/>
+                            <text x="90" y="336" text-anchor="middle" font-family="Manrope" font-size="9" fill="#81d4a0" font-weight="600">Feet</text>
+                        </g>
+                    </svg>
+                    <div id="pmr-progress-dots" style="display:flex;justify-content:center;gap:5px;margin-top:8px;flex-wrap:wrap;"></div>
+                </div>
+                <!-- Instructions panel -->
+                <div class="reveal">
+                    <div id="pmr-instruction-box" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px;min-height:200px;">
+                        <div id="pmr-ready" style="">
+                            <div style="font-size:2rem;margin-bottom:10px;">👆</div>
+                            <h4 style="font-family:'Cormorant',serif;font-size:1.3rem;font-weight:700;color:#e8f0fe;margin-bottom:8px;">How to do it</h4>
+                            <p style="font-size:0.82rem;color:#a8bbd4;line-height:1.7;margin-bottom:10px;">For each body part, you will <strong style="color:#e8f0fe;">squeeze tight for 5 seconds</strong>, then <strong style="color:#e8f0fe;">let go completely for 10 seconds</strong>. Feel the difference between tension and release. That release is your body relaxing.</p>
+                            <p style="font-size:0.8rem;color:#4fc3f7;font-weight:600;">Click on a body part to begin ↙</p>
+                        </div>
+                        <div id="pmr-active" style="display:none;">
+                            <div style="font-size:0.65rem;color:#637d96;text-transform:uppercase;letter-spacing:3px;margin-bottom:4px;" id="pmr-part-label">—</div>
+                            <h4 style="font-family:'Cormorant',serif;font-size:1.5rem;font-weight:700;margin-bottom:8px;" id="pmr-part-name">—</h4>
+                            <div id="pmr-phase-box" style="background:rgba(79,195,247,0.08);border:1px solid rgba(79,195,247,0.2);border-radius:10px;padding:14px;margin-bottom:12px;">
+                                <div style="font-size:2.5rem;text-align:center;font-family:'Cormorant',serif;font-weight:700;color:#4fc3f7;" id="pmr-timer">5</div>
+                                <div style="text-align:center;font-size:0.82rem;font-weight:600;" id="pmr-phase-label">Squeeze tight!</div>
+                            </div>
+                            <p style="font-size:0.8rem;color:#a8bbd4;line-height:1.6;" id="pmr-instruction-text">—</p>
+                            <button id="pmr-done-btn" onclick="markPMRDone()" style="margin-top:12px;width:100%;padding:10px;background:rgba(129,212,160,0.15);border:1px solid rgba(129,212,160,0.3);border-radius:8px;color:#81d4a0;font-family:'Manrope',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;display:none;">✓ Done — Next Part</button>
+                        </div>
+                        <div id="pmr-complete" style="display:none;text-align:center;padding:10px;">
+                            <div style="font-size:3rem;margin-bottom:10px;">🌟</div>
+                            <h4 style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:700;color:#81d4a0;margin-bottom:8px;">Full Body Release Complete!</h4>
+                            <p style="font-size:0.82rem;color:#a8bbd4;line-height:1.6;">Notice the warmth and heaviness in your body right now. That is what true physical relaxation feels like. Most people haven't felt this in months.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 9A: YOUR HOME & STRESS (Part 1 of old slide 9) -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide slide-10" data-slide="10">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:450px;height:450px;top:-110px;right:-90px;background:#b39ddb;opacity:0.11;"></div>
+            <div class="blob" style="width:300px;height:300px;bottom:-70px;left:-50px;background:#81d4a0;opacity:0.09;"></div>
+        </div>
+        <div class="content">
+            <p class="reveal" style="font-size:0.75rem;color:#b39ddb;text-transform:uppercase;letter-spacing:5px;font-weight:600;margin-bottom:0.5rem;">Your Space · Big Idea</p>
+            <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,3.8vw,2.8rem);font-weight:700;color:#e8f0fe;margin-bottom:0.5rem;">Your Home Is Either<br>Charging You Up or Draining You</h2>
+            <p class="reveal" style="font-size:0.88rem;color:#a8bbd4;margin-bottom:1.3rem;line-height:1.6;">Every room you walk into sends a signal to your brain — either "relax" or "alert." Most of us have homes that are accidentally stressful. The good news: small changes make a big difference.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="reveal" style="background:rgba(255,100,100,0.06);border:1px solid rgba(255,100,100,0.18);border-radius:14px;padding:20px;">
+                    <div style="font-size:0.72rem;color:#ef9a9a;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;">🔴 Things That Raise Stress at Home</div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <div style="display:flex;gap:10px;align-items:flex-start;"><span style="color:#ef9a9a;font-size:1rem;flex-shrink:0;">📦</span><div><strong style="font-size:0.8rem;color:#e8f0fe;">Clutter</strong><p style="font-size:0.75rem;color:#a8bbd4;margin:2px 0 0;">Your brain reads mess as unfinished tasks. It keeps your stress system "on."</p></div></div>
+                        <div style="display:flex;gap:10px;align-items:flex-start;"><span style="color:#ef9a9a;font-size:1rem;flex-shrink:0;">💡</span><div><strong style="font-size:0.8rem;color:#e8f0fe;">Harsh lighting at night</strong><p style="font-size:0.75rem;color:#a8bbd4;margin:2px 0 0;">Bright blue-white light after 8pm tells your brain it's still daytime. You can't fully wind down.</p></div></div>
+                        <div style="display:flex;gap:10px;align-items:flex-start;"><span style="color:#ef9a9a;font-size:1rem;flex-shrink:0;">📢</span><div><strong style="font-size:0.8rem;color:#e8f0fe;">Background noise</strong><p style="font-size:0.75rem;color:#a8bbd4;margin:2px 0 0;">TV running constantly, notifications pinging — your nervous system never gets a quiet moment.</p></div></div>
+                    </div>
+                </div>
+                <div class="reveal" style="background:rgba(129,212,160,0.06);border:1px solid rgba(129,212,160,0.18);border-radius:14px;padding:20px;">
+                    <div style="font-size:0.72rem;color:#81d4a0;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;">🟢 Simple Things That Reduce Stress</div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <div style="display:flex;gap:10px;align-items:flex-start;"><span style="color:#81d4a0;font-size:1rem;flex-shrink:0;">☀️</span><div><strong style="font-size:0.8rem;color:#e8f0fe;">Natural light in the morning</strong><p style="font-size:0.75rem;color:#a8bbd4;margin:2px 0 0;">10 minutes of morning sunlight resets your body clock and lowers cortisol for the whole day.</p></div></div>
+                        <div style="display:flex;gap:10px;align-items:flex-start;"><span style="color:#81d4a0;font-size:1rem;flex-shrink:0;">🌿</span><div><strong style="font-size:0.8rem;color:#e8f0fe;">A plant or two</strong><p style="font-size:0.75rem;color:#a8bbd4;margin:2px 0 0;">Studies show even one plant in a room reduces stress by up to 37%. Nature calms the nervous system.</p></div></div>
+                        <div style="display:flex;gap:10px;align-items:flex-start;"><span style="color:#81d4a0;font-size:1rem;flex-shrink:0;">🪑</span><div><strong style="font-size:0.8rem;color:#e8f0fe;">One calm corner</strong><p style="font-size:0.75rem;color:#a8bbd4;margin:2px 0 0;">A single chair or spot with no screens. Just for sitting quietly. Your brain will learn to relax there.</p></div></div>
+                    </div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size:0.78rem;color:#637d96;margin-top:1rem;font-style:italic;">💡 You don't need to renovate. Start with one change this week — clear one surface, add one plant, dim one light.</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 9B: THE PROPERTY CONNECTION (Part 2 of old slide 9) -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide slide-11" data-slide="11">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:400px;height:400px;top:-100px;left:-80px;background:#b39ddb;opacity:0.10;"></div>
+            <div class="blob" style="width:280px;height:280px;bottom:-60px;right:-50px;background:#81d4a0;opacity:0.08;"></div>
+        </div>
+        <div class="content">
+            <p class="reveal" style="font-size:0.75rem;color:#b39ddb;text-transform:uppercase;letter-spacing:5px;font-weight:600;margin-bottom:0.5rem;">The Property Angle</p>
+            <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,3.8vw,2.8rem);font-weight:700;color:#e8f0fe;margin-bottom:0.5rem;">When You Buy a Home,<br>You're Also Buying Your Recovery.</h2>
+            <p class="reveal" style="font-size:0.88rem;color:#a8bbd4;margin-bottom:1.4rem;line-height:1.6;">Most people ask: "Is this a good investment?" But the more important question is: <strong style="color:#e8f0fe;">"Will this home help me recover from my day?"</strong> A well-designed home is the highest-value mental health tool you can own.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="reveal" style="background:rgba(179,157,219,0.06);border:1px solid rgba(179,157,219,0.2);border-radius:14px;padding:20px;">
+                    <h4 style="font-family:'Cormorant',serif;font-size:1.2rem;font-weight:700;color:#b39ddb;margin-bottom:10px;">What to look for</h4>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <div style="display:flex;gap:10px;"><span style="color:#b39ddb;">✦</span><p style="font-size:0.8rem;color:#a8bbd4;margin:0;line-height:1.5;">Good natural light — especially in the living and sleeping areas</p></div>
+                        <div style="display:flex;gap:10px;"><span style="color:#b39ddb;">✦</span><p style="font-size:0.8rem;color:#a8bbd4;margin:0;line-height:1.5;">Space to be quiet — even a small balcony or garden corner</p></div>
+                        <div style="display:flex;gap:10px;"><span style="color:#b39ddb;">✦</span><p style="font-size:0.8rem;color:#a8bbd4;margin:0;line-height:1.5;">Layout that separates work, rest, and family — each space should feel different</p></div>
+                        <div style="display:flex;gap:10px;"><span style="color:#b39ddb;">✦</span><p style="font-size:0.8rem;color:#a8bbd4;margin:0;line-height:1.5;">Access to green space or water nearby — nature reduces cortisol by up to 68%</p></div>
+                    </div>
+                </div>
+                <div class="reveal" style="background:rgba(79,195,247,0.06);border:1px solid rgba(79,195,247,0.2);border-radius:14px;padding:20px;">
+                    <h4 style="font-family:'Cormorant',serif;font-size:1.2rem;font-weight:700;color:#4fc3f7;margin-bottom:10px;">The right question to ask</h4>
+                    <div style="background:rgba(79,195,247,0.10);border-radius:10px;padding:16px;margin-bottom:12px;">
+                        <p style="font-family:'Cormorant',serif;font-size:1.1rem;font-weight:600;color:#e8f0fe;line-height:1.6;margin:0;">"When I come home tired and stressed — will this space help me recover? Or will it add to my load?"</p>
+                    </div>
+                    <p style="font-size:0.78rem;color:#a8bbd4;line-height:1.6;">That is the question a psychologist would ask. It is the question you should ask your developer too.</p>
+                </div>
+            </div>
+            <p class="reveal" style="font-size:0.78rem;color:#637d96;margin-top:1rem;font-style:italic;">💡 A RM600,000 home that drains you costs more in the long run than a RM500,000 home that restores you.</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 10 (NEW): THE DAILY 15 — interactive/engaging -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide slide-12" data-slide="12">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:400px;height:400px;top:-100px;right:-80px;background:#81d4a0;opacity:0.09;"></div>
+            <div class="blob" style="width:280px;height:280px;bottom:-60px;left:-50px;background:#4fc3f7;opacity:0.08;"></div>
+        </div>
+        <div class="content">
+            <p class="reveal" style="font-size:0.75rem;color:#81d4a0;text-transform:uppercase;letter-spacing:5px;font-weight:600;margin-bottom:0.3rem;">Your Action Plan</p>
+            <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,3.8vw,2.8rem);font-weight:700;color:#e8f0fe;margin-bottom:0.3rem;">Just 15 Minutes a Day</h2>
+            <p class="reveal" style="font-size:0.85rem;color:#a8bbd4;margin-bottom:1rem;line-height:1.5;">Not an hour. Not a gym membership. Just 15 minutes — split into 3 simple moments across your day. <strong style="color:#e8f0fe;">Tick each one you will commit to.</strong></p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:1rem;">
+                <!-- Morning -->
+                <div class="reveal" style="background:rgba(79,195,247,0.06);border:1px solid rgba(79,195,247,0.2);border-radius:14px;padding:18px;text-align:center;">
+                    <div style="font-size:2.2rem;margin-bottom:6px;">🌅</div>
+                    <div style="font-size:0.65rem;color:#4fc3f7;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">Morning · 5 min</div>
+                    <h4 style="font-family:'Cormorant',serif;font-size:1.1rem;font-weight:700;color:#e8f0fe;margin-bottom:6px;">Start Calm</h4>
+                    <p style="font-size:0.75rem;color:#a8bbd4;line-height:1.5;margin-bottom:12px;">Before you look at your phone — open a window, step outside for 1 minute, take 5 slow deep breaths. That's it. This sets your stress level for the whole day.</p>
+                    <div class="daily15-check" onclick="toggleDaily15(this)" style="background:rgba(79,195,247,0.1);border:1px solid rgba(79,195,247,0.3);border-radius:8px;padding:8px;cursor:pointer;transition:all 0.3s;font-size:0.78rem;color:#4fc3f7;font-weight:600;">☐ I'll do this</div>
+                </div>
+                <!-- Midday -->
+                <div class="reveal" style="background:rgba(129,212,160,0.06);border:1px solid rgba(129,212,160,0.2);border-radius:14px;padding:18px;text-align:center;">
+                    <div style="font-size:2.2rem;margin-bottom:6px;">⏸️</div>
+                    <div style="font-size:0.65rem;color:#81d4a0;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">Midday · 5 min</div>
+                    <h4 style="font-family:'Cormorant',serif;font-size:1.1rem;font-weight:700;color:#e8f0fe;margin-bottom:6px;">Pause & Reset</h4>
+                    <p style="font-size:0.75rem;color:#a8bbd4;line-height:1.5;margin-bottom:12px;">At lunchtime — put your phone face-down for 5 minutes. No scrolling. Just eat, breathe, and look around. This stops your afternoon energy crash before it starts.</p>
+                    <div class="daily15-check" onclick="toggleDaily15(this)" style="background:rgba(129,212,160,0.1);border:1px solid rgba(129,212,160,0.3);border-radius:8px;padding:8px;cursor:pointer;transition:all 0.3s;font-size:0.78rem;color:#81d4a0;font-weight:600;">☐ I'll do this</div>
+                </div>
+                <!-- Evening -->
+                <div class="reveal" style="background:rgba(179,157,219,0.06);border:1px solid rgba(179,157,219,0.2);border-radius:14px;padding:18px;text-align:center;">
+                    <div style="font-size:2.2rem;margin-bottom:6px;">🌙</div>
+                    <div style="font-size:0.65rem;color:#b39ddb;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">Evening · 5 min</div>
+                    <h4 style="font-family:'Cormorant',serif;font-size:1.1rem;font-weight:700;color:#e8f0fe;margin-bottom:6px;">End With Gratitude</h4>
+                    <p style="font-size:0.75rem;color:#a8bbd4;line-height:1.5;margin-bottom:12px;">Before bed — write 3 things that were good today. Doesn't have to be big. "Good coffee. My kid laughed. Meeting went okay." This retrains your brain to look for the good.</p>
+                    <div class="daily15-check" onclick="toggleDaily15(this)" style="background:rgba(179,157,219,0.1);border:1px solid rgba(179,157,219,0.3);border-radius:8px;padding:8px;cursor:pointer;transition:all 0.3s;font-size:0.78rem;color:#b39ddb;font-weight:600;">☐ I'll do this</div>
+                </div>
+            </div>
+            <div class="reveal" style="background:rgba(255,204,128,0.07);border:1px solid rgba(255,204,128,0.2);border-radius:12px;padding:12px 20px;display:flex;align-items:center;gap:14px;">
+                <div style="font-size:1.8rem;">⚡</div>
+                <div>
+                    <p style="font-size:0.82rem;color:#e8f0fe;font-weight:600;margin-bottom:2px;">15 minutes × 30 days = your brain physically changes. Memory improves. Anxiety reduces. Sleep gets better.</p>
+                    <p style="font-size:0.72rem;color:#637d96;">Harvard Neuroscience, 2022 — small daily practices beat irregular long sessions by 3 to 1.</p>
+                </div>
+            </div>
+            <div id="daily15-msg" style="display:none;margin-top:0.8rem;text-align:center;font-size:0.85rem;color:#81d4a0;font-weight:600;"></div>
+        </div>
+    </div>
+
+    <!-- SLIDE 12: CLOSING (maintained) -->
+    <div class="slide slide-13" data-slide="13">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:520px;height:520px;top:-130px;right:-110px;background:#4fc3f7;opacity:0.12;"></div>
+            <div class="blob" style="width:380px;height:380px;bottom:-90px;left:-70px;background:#81d4a0;opacity:0.10;"></div>
+            <div class="blob" style="width:240px;height:240px;top:45%;left:20%;background:#b39ddb;opacity:0.09;"></div>
+            <div class="blob" style="width:180px;height:180px;top:25%;left:50%;background:#4fc3f7;opacity:0.06;"></div>
+        </div>
+        <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;"></canvas>
+        <div class="content text-center">
+            <div style="font-size:80px;animation:float 3s ease-in-out infinite;margin-bottom:1rem;" class="reveal">🌱</div>
+            <h1 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(2rem,5vw,3.8rem);font-weight:700;background:linear-gradient(135deg,#81d4a0,#4fc3f7,#b39ddb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.8rem;line-height:1.15;">Resilience is not a destination.<br>It is a daily decision.</h1>
+            <p class="reveal" style="font-size:0.9rem;color:#a8bbd4;margin-bottom:2rem;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.7;">You now have the tools. The biology, the audit, the reset technique, and the framework. The only variable is practice.</p>
+            <div class="reveal" style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;">
+                <div style="background:rgba(79,195,247,0.08);border:1px solid rgba(79,195,247,0.2);border-radius:12px;padding:14px 24px;text-align:center;">
+                    <div style="font-size:1.8rem;font-family:'Cormorant',serif;font-weight:700;color:#4fc3f7;">15 min</div>
+                    <div style="font-size:0.7rem;color:#637d96;text-transform:uppercase;letter-spacing:2px;margin-top:2px;">Daily Practice</div>
+                </div>
+                <div style="background:rgba(129,212,160,0.08);border:1px solid rgba(129,212,160,0.2);border-radius:12px;padding:14px 24px;text-align:center;">
+                    <div style="font-size:1.8rem;font-family:'Cormorant',serif;font-weight:700;color:#81d4a0;">3 Layers</div>
+                    <div style="font-size:0.7rem;color:#637d96;text-transform:uppercase;letter-spacing:2px;margin-top:2px;">Body · Mind · Space</div>
+                </div>
+                <div style="background:rgba(179,157,219,0.08);border:1px solid rgba(179,157,219,0.2);border-radius:12px;padding:14px 24px;text-align:center;">
+                    <div style="font-size:1.8rem;font-family:'Cormorant',serif;font-weight:700;color:#b39ddb;">1 Choice</div>
+                    <div style="font-size:0.7rem;color:#637d96;text-transform:uppercase;letter-spacing:2px;margin-top:2px;">Start Today</div>
+                </div>
+            </div>
+            <p class="reveal" style="margin-top:1.8rem;font-size:0.75rem;color:#637d96;letter-spacing:3px;text-transform:uppercase;">Managing Stress · Building Mental Resilience · 18 April 2026</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 14: SPEAKER CTA -->
+    <div class="slide slide-14" data-slide="14">
+        <div class="gradient-mesh">
+            <div class="blob" style="width:500px;height:500px;top:-130px;right:-110px;background:#4fc3f7;opacity:0.10;"></div>
+            <div class="blob" style="width:360px;height:360px;bottom:-90px;left:-70px;background:#81d4a0;opacity:0.09;"></div>
+            <div class="blob" style="width:220px;height:220px;top:40%;left:18%;background:#b39ddb;opacity:0.07;"></div>
+        </div>
+        <canvas class="particle-canvas-ambient" style="position:absolute;inset:0;z-index:1;"></canvas>
+        <div class="content text-center">
+            <!-- Avatar ring -->
+            <div class="reveal" style="width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,rgba(79,195,247,0.2),rgba(129,212,160,0.15));border:2px solid rgba(79,195,247,0.35);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2.4rem;animation:float 3s ease-in-out infinite;">🧑‍💼</div>
+
+            <!-- Name & title -->
+            <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;color:#e8f0fe;margin-bottom:0.3rem;line-height:1.15;">Mr Lim Wooi Chin</h2>
+            <p class="reveal" style="font-size:0.78rem;color:#81d4a0;letter-spacing:3px;text-transform:uppercase;font-weight:600;margin-bottom:0.3rem;">Malaysian Licensed Psychology Counsellor</p>
+            <p class="reveal" style="font-size:0.75rem;color:#637d96;margin-bottom:1.8rem;">MSc Psychology Counselling · 10+ Years Experience</p>
+
+            <!-- CTA buttons -->
+            <div class="reveal" style="display:flex;flex-direction:column;align-items:center;gap:12px;max-width:420px;margin:0 auto;">
+
+                <!-- WhatsApp -->
+                <a href="https://api.whatsapp.com/send/?phone=60164156142" target="_blank" rel="noopener"
+                   style="display:flex;align-items:center;gap:14px;width:100%;padding:14px 20px;background:rgba(37,211,102,0.08);border:1px solid rgba(37,211,102,0.28);border-radius:14px;text-decoration:none;transition:all 0.25s;"
+                   onmouseover="this.style.background='rgba(37,211,102,0.15)'" onmouseout="this.style.background='rgba(37,211,102,0.08)'">
+                    <span style="font-size:1.3rem;flex-shrink:0;">💬</span>
+                    <div style="text-align:left;flex:1;">
+                        <div style="font-size:0.85rem;font-weight:700;color:#25d166;">WhatsApp</div>
+                        <div style="font-size:0.72rem;color:#637d96;">Chat or book a session — +60 16-415 6142</div>
+                    </div>
+                    <span style="color:#637d96;font-size:0.85rem;">↗</span>
+                </a>
+
+                <!-- Website -->
+                <a href="https://www.penangcounsellor.com/" target="_blank" rel="noopener"
+                   style="display:flex;align-items:center;gap:14px;width:100%;padding:14px 20px;background:rgba(79,195,247,0.07);border:1px solid rgba(79,195,247,0.22);border-radius:14px;text-decoration:none;transition:all 0.25s;"
+                   onmouseover="this.style.background='rgba(79,195,247,0.14)'" onmouseout="this.style.background='rgba(79,195,247,0.07)'">
+                    <span style="font-size:1.3rem;flex-shrink:0;">🌐</span>
+                    <div style="text-align:left;flex:1;">
+                        <div style="font-size:0.85rem;font-weight:700;color:#4fc3f7;">penangcounsellor.com</div>
+                        <div style="font-size:0.72rem;color:#637d96;">Services, approach, and how to get started</div>
+                    </div>
+                    <span style="color:#637d96;font-size:0.85rem;">↗</span>
+                </a>
+
+                <!-- Portfolio -->
+                <a href="https://wooichinlim.notion.site/" target="_blank" rel="noopener"
+                   style="display:flex;align-items:center;gap:14px;width:100%;padding:14px 20px;background:rgba(179,157,219,0.07);border:1px solid rgba(179,157,219,0.22);border-radius:14px;text-decoration:none;transition:all 0.25s;"
+                   onmouseover="this.style.background='rgba(179,157,219,0.14)'" onmouseout="this.style.background='rgba(179,157,219,0.07)'">
+                    <span style="font-size:1.3rem;flex-shrink:0;">📋</span>
+                    <div style="text-align:left;flex:1;">
+                        <div style="font-size:0.85rem;font-weight:700;color:#b39ddb;">Portfolio</div>
+                        <div style="font-size:0.72rem;color:#637d96;">Background, training, workshops & professional work</div>
+                    </div>
+                    <span style="color:#637d96;font-size:0.85rem;">↗</span>
+                </a>
+
+            </div>
+
+            <p class="reveal" style="margin-top:1.6rem;font-size:0.7rem;color:#637d96;letter-spacing:2px;">Managing Stress · Building Mental Resilience · 18 April 2026</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- NAVIGATION -->
+<div class="nav-controls">
+    <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
+    <div class="slide-dots" id="dots"></div>
+    <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
+    <span class="slide-counter" id="counter">1 / 14</span>
+</div>
+
+<script>
+    let current = 1;
+    const total = document.querySelectorAll('.slide').length;
+    const dotsContainer = document.getElementById('dots');
+    const counter = document.getElementById('counter');
+    for (let i = 1; i <= total; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === 1 ? ' active' : '');
+        dot.onclick = () => goToSlide(i);
+        dotsContainer.appendChild(dot);
+    }
+    function goToSlide(n) {
+        const prev = document.querySelector('.slide.active');
+        const next = document.querySelector(`.slide[data-slide="${n}"]`);
+        if (prev) prev.classList.remove('active');
+        if (next) { next.classList.add('active'); animateSlide(next); }
+        current = n; updateNav();
+    }
+    function changeSlide(dir) { let next = current + dir; if (next < 1) next = total; if (next > total) next = 1; goToSlide(next); }
+    function updateNav() {
+        document.querySelectorAll('.dot').forEach((d, i) => { d.classList.toggle('active', i + 1 === current); });
+        counter.textContent = current + ' / ' + total;
+    }
+    document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); changeSlide(1); } if (e.key === 'ArrowLeft') { e.preventDefault(); changeSlide(-1); } });
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', (e) => { const diff = touchStartX - e.changedTouches[0].clientX; if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1); });
+
+    function animateSlide(slide) {
+        slide.querySelectorAll('.reveal').forEach((el, i) => {
+            el.style.transition = 'none'; el.style.opacity = '0'; el.style.transform = 'translateY(20px)';
+            el.offsetHeight;
+            const delay = i * 0.08;
+            el.style.transition = `opacity 0.35s ease ${delay}s, transform 0.35s ease ${delay}s`;
+            el.style.opacity = '1'; el.style.transform = 'translateY(0px)';
+        });
+        animateSlideEffects(slide);
+    }
+    function animateSlideEffects(slide) {
+        slide.querySelectorAll('[data-count]:not(.counted)').forEach(el => {
+            el.classList.add('counted');
+            const target = parseInt(el.dataset.count);
+            let cur = 0; const step = target / 40;
+            const timer = setInterval(() => { cur += step; if (cur >= target) { cur = target; clearInterval(timer); } el.textContent = Math.round(cur); }, 30);
+        });
+    }
+    document.addEventListener('mousemove', (e) => {
+        const spotlight = document.querySelector('.mouse-spotlight');
+        if (spotlight) spotlight.style.background = `radial-gradient(600px circle at ${e.clientX}px ${e.clientY}px, rgba(79,195,247,0.05), transparent 40%)`;
+    });
+    window.initParticles = function(canvas, options) {
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+        const interactive = options.interactive !== false;
+        const count = options.count || (interactive ? 55 : 18);
+        let mx = -1000, my = -1000;
+        const particles = Array.from({ length: count }, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3, size: Math.random() * 2.5 + 0.8, alpha: Math.random() * 0.3 + 0.1 }));
+        if (interactive) { canvas.addEventListener('mousemove', (e) => { const rect = canvas.getBoundingClientRect(); mx = e.clientX - rect.left; my = e.clientY - rect.top; }); canvas.addEventListener('mouseleave', () => { mx = -1000; my = -1000; }); }
+        (function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                if (interactive) { const dx = p.x - mx, dy = p.y - my, dist = Math.sqrt(dx*dx+dy*dy); if (dist < 120) { const force = (120-dist)/120*2; p.vx += (dx/dist)*force*0.1; p.vy += (dy/dist)*force*0.1; } }
+                p.vx *= 0.98; p.vy *= 0.98; p.x += p.vx; p.y += p.vy;
+                if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(79,195,247,${p.alpha})`; ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        })();
+    };
+    document.querySelectorAll('.particle-canvas').forEach(c => window.initParticles(c, { interactive: true, count: 55 }));
+    document.querySelectorAll('.particle-canvas-ambient').forEach(c => window.initParticles(c, { interactive: false, count: 18 }));
+
+    // Checklist
+    function toggleCheck(item) { item.classList.toggle('checked'); updateSurvivalScore(); }
+    function updateSurvivalScore() {
+        const checked = document.querySelectorAll('.check-item.checked').length;
+        document.getElementById('survival-score').textContent = checked;
+        const label = document.getElementById('score-label'), desc = document.getElementById('score-desc');
+        if (checked === 0) { label.textContent = 'Select any that apply'; desc.textContent = '3+ checked = you may be in Survival Mode'; label.style.color = '#e8f0fe'; }
+        else if (checked <= 2) { label.textContent = 'Mild Stress Indicators'; desc.textContent = 'Early stage — great time to build habits now'; label.style.color = '#81d4a0'; }
+        else if (checked === 3) { label.textContent = '⚠️ Entering Survival Mode'; desc.textContent = 'Your nervous system is under chronic load'; label.style.color = '#ffcc80'; }
+        else { label.textContent = '🔴 Survival Mode Active'; desc.textContent = 'Your body is sending urgent signals. Act now.'; label.style.color = '#ef9a9a'; }
+    }
+
+    // Box breathing
+    let breathInterval = null, breathRunning = false;
+    const steps = ['inhale','hold1','exhale','hold2'];
+    const stepLabels = ['Breathe In...','Hold...','Breathe Out...','Hold...'];
+    let stepIndex = 0, countdown = 4;
+    function startBreathing() {
+        if (breathRunning) {
+            clearInterval(breathInterval); breathRunning = false;
+            document.getElementById('breath-btn').textContent = '▶ Start Breathing';
+            document.getElementById('breath-text').innerHTML = 'Press<br>Start';
+            document.getElementById('breath-circle').style.transform = 'scale(1)';
+            steps.forEach(s => document.getElementById('step-'+s).classList.remove('active-step'));
+            return;
+        }
+        breathRunning = true; stepIndex = 0; countdown = 4;
+        document.getElementById('breath-btn').textContent = '■ Stop';
+        runBreathStep();
+        breathInterval = setInterval(() => {
+            countdown--;
+            if (countdown <= 0) { stepIndex = (stepIndex + 1) % 4; countdown = 4; runBreathStep(); }
+            else { document.getElementById('breath-text').innerHTML = stepLabels[stepIndex] + '<br>' + countdown; }
+        }, 1000);
+    }
+    function runBreathStep() {
+        steps.forEach(s => document.getElementById('step-'+s).classList.remove('active-step'));
+        document.getElementById('step-'+steps[stepIndex]).classList.add('active-step');
+        document.getElementById('breath-text').innerHTML = stepLabels[stepIndex] + '<br>4';
+        const circle = document.getElementById('breath-circle');
+        if (stepIndex === 0) circle.style.transform = 'scale(1.4)';
+        else if (stepIndex === 2) circle.style.transform = 'scale(0.8)';
+        else circle.style.transform = 'scale(1.1)';
+    }
+
+    // 5-4-3 Reframe
+    function checkReframe() {}
+    function markAffirmationDone(btn) {
+        btn.textContent = '✓ Said it!';
+        btn.style.background = 'rgba(129,212,160,0.25)';
+        btn.style.borderColor = 'rgba(129,212,160,0.5)';
+        btn.style.color = '#81d4a0';
+        document.getElementById('reframe-complete').style.display = 'block';
+    }
+
+    // PMR
+    const pmrParts = [
+        { id: 'head', name: 'Face & Head', label: 'Body Part 1 of 10', instruction: 'Scrunch your face tight — squeeze your eyes shut, clench your jaw, raise your eyebrows. Hold it for 5 seconds... then let go completely. Feel the warmth spread across your face.' },
+        { id: 'neck', name: 'Neck', label: 'Body Part 2 of 10', instruction: 'Slowly tilt your head forward, bringing your chin toward your chest. Feel the stretch at the back of your neck. Hold gently for 5 seconds... then slowly bring your head back up. Let the tension go.' },
+        { id: 'shoulders', name: 'Shoulders', label: 'Body Part 3 of 10', instruction: 'Raise both shoulders up toward your ears as high as you can. Hold them there tightly for 5 seconds... then drop them completely. Notice how much lower they fall than where they started.' },
+        { id: 'chest', name: 'Chest', label: 'Body Part 4 of 10', instruction: 'Take a deep breath in, filling your chest fully, and hold it while squeezing your chest muscles. Hold for 5 seconds... then breathe out slowly and let your chest soften and drop.' },
+        { id: 'arms', name: 'Arms', label: 'Body Part 5 of 10', instruction: 'Stretch both arms out straight, make tight fists, and squeeze your biceps hard. Hold for 5 seconds... then let your arms drop and hands open. Feel the blood flow return to your hands.' },
+        { id: 'abdomen', name: 'Abdomen', label: 'Body Part 6 of 10', instruction: 'Tighten your stomach muscles as if bracing for a punch. Hold that tightness for 5 seconds... then release completely. Notice your belly softening with each breath out.' },
+        { id: 'hands', name: 'Hands', label: 'Body Part 7 of 10', instruction: 'Clench both fists as tight as you can. Squeeze hard for 5 seconds... then spread your fingers wide and let them go. Feel the tingling as tension leaves your hands.' },
+        { id: 'thighs', name: 'Thighs', label: 'Body Part 8 of 10', instruction: 'Press both feet flat on the floor and squeeze your thigh muscles together firmly. Hold for 5 seconds... then let them soften. Notice the heaviness in your legs as they relax.' },
+        { id: 'calves', name: 'Calves', label: 'Body Part 9 of 10', instruction: 'Point your toes down toward the floor and tense your calf muscles tightly. Hold for 5 seconds... then flex your feet upward and let the tension release down through your heels.' },
+        { id: 'feet', name: 'Feet & Toes', label: 'Body Part 10 of 10', instruction: 'Curl your toes downward as tightly as you can. Scrunch them hard for 5 seconds... then spread them wide and let go. Scan your whole body now — notice the difference from when we started.' }
+    ];
+    let pmrActive = -1, pmrDoneSet = new Set(), pmrTimer = null, pmrPhase = 'squeeze', pmrCount = 5;
+
+    function buildPMRDots() {
+        const container = document.getElementById('pmr-progress-dots');
+        container.innerHTML = '';
+        pmrParts.forEach((p, i) => {
+            const d = document.createElement('div');
+            d.id = 'pmr-dot-' + i;
+            d.style.cssText = 'width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);transition:all 0.3s;';
+            container.appendChild(d);
+        });
+    }
+    buildPMRDots();
+
+    function selectPMRPart(partId) {
+        const idx = pmrParts.findIndex(p => p.id === partId);
+        if (idx === -1 || pmrDoneSet.has(idx)) return;
+        if (pmrTimer) { clearInterval(pmrTimer); pmrTimer = null; }
+        pmrActive = idx;
+        pmrPhase = 'squeeze'; pmrCount = 5;
+        document.querySelectorAll('.pmr-body-part').forEach(el => el.classList.remove('active-part'));
+        document.getElementById('part-' + partId).classList.add('active-part');
+        const part = pmrParts[idx];
+        document.getElementById('pmr-ready').style.display = 'none';
+        document.getElementById('pmr-complete').style.display = 'none';
+        document.getElementById('pmr-active').style.display = 'block';
+        document.getElementById('pmr-part-label').textContent = part.label;
+        document.getElementById('pmr-part-name').textContent = part.name;
+        document.getElementById('pmr-instruction-text').textContent = part.instruction;
+        document.getElementById('pmr-done-btn').style.display = 'none';
+        updatePMRPhaseBox();
+        pmrTimer = setInterval(() => {
+            pmrCount--;
+            if (pmrCount <= 0) {
+                if (pmrPhase === 'squeeze') {
+                    pmrPhase = 'release'; pmrCount = 10;
+                    updatePMRPhaseBox();
+                } else {
+                    clearInterval(pmrTimer); pmrTimer = null;
+                    document.getElementById('pmr-done-btn').style.display = 'block';
+                }
+            } else { document.getElementById('pmr-timer').textContent = pmrCount; }
+        }, 1000);
+    }
+    function updatePMRPhaseBox() {
+        const box = document.getElementById('pmr-phase-box');
+        const lbl = document.getElementById('pmr-phase-label');
+        const timer = document.getElementById('pmr-timer');
+        if (pmrPhase === 'squeeze') {
+            box.style.background = 'rgba(239,154,154,0.12)'; box.style.borderColor = 'rgba(239,154,154,0.3)';
+            timer.style.color = '#ef9a9a'; lbl.style.color = '#ef9a9a';
+            timer.textContent = '5'; lbl.textContent = '🤜 Squeeze tight!';
+        } else {
+            box.style.background = 'rgba(129,212,160,0.12)'; box.style.borderColor = 'rgba(129,212,160,0.3)';
+            timer.style.color = '#81d4a0'; lbl.style.color = '#81d4a0';
+            timer.textContent = '10'; lbl.textContent = '✋ Let go & relax...';
+        }
+    }
+    function markPMRDone() {
+        if (pmrActive === -1) return;
+        pmrDoneSet.add(pmrActive);
+        document.getElementById('part-' + pmrParts[pmrActive].id).classList.remove('active-part');
+        document.getElementById('part-' + pmrParts[pmrActive].id).classList.add('done-part');
+        const dot = document.getElementById('pmr-dot-' + pmrActive);
+        if (dot) { dot.style.background = '#81d4a0'; dot.style.transform = 'scale(1.2)'; }
+        if (pmrDoneSet.size === pmrParts.length) {
+            document.getElementById('pmr-active').style.display = 'none';
+            document.getElementById('pmr-complete').style.display = 'block';
+        } else {
+            const nextIdx = pmrParts.findIndex((p, i) => !pmrDoneSet.has(i));
+            if (nextIdx !== -1) selectPMRPart(pmrParts[nextIdx].id);
+        }
+    }
+
+    // Daily 15 commitment
+    function toggleDaily15(el) {
+        const checked = el.dataset.checked === 'true';
+        if (!checked) {
+            el.dataset.checked = 'true';
+            el.textContent = '✓ Committed!';
+            el.style.background = 'rgba(129,212,160,0.2)';
+            el.style.borderColor = 'rgba(129,212,160,0.5)';
+            el.style.color = '#81d4a0';
+        }
+        const total = document.querySelectorAll('.daily15-check').length;
+        const done = document.querySelectorAll('.daily15-check[data-checked="true"]').length;
+        const msg = document.getElementById('daily15-msg');
+        if (done === 1) { msg.style.display = 'block'; msg.textContent = 'Good start! Each one you add multiplies the effect.'; }
+        else if (done === 2) { msg.style.display = 'block'; msg.textContent = 'Two out of three — you\'re building a real practice.'; }
+        else if (done === total) { msg.style.display = 'block'; msg.textContent = '🌟 All three! 15 minutes a day. That\'s your commitment. Start tomorrow morning.'; }
+    }
+
+    try { animateSlide(document.querySelector('.slide.active')); } catch(e) {}
+</script>
+</body>
+</html>
