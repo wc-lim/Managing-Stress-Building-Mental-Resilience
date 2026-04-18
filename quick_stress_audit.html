@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Stress Audit · PenangCounsellor.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161d27;
+    --surface-2: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.08);
+    --text: #e8f0fe;
+    --text-muted: #a8bbd4;
+    --text-dim: #637d96;
+    --accent: #4fc3f7;
+    --green: #81d4a0;
+    --purple: #b39ddb;
+    --amber: #ffcc80;
+    --red: #ef9a9a;
+  }
+
+  html, body { background: var(--bg); color: var(--text); font-family: 'Manrope', sans-serif; min-height: 100vh; }
+  body { display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem 4rem; position: relative; overflow-x: hidden; }
+
+  .bg-blob { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
+  .bg-blob-1 { width: 500px; height: 500px; top: -150px; right: -100px; background: #4fc3f7; opacity: 0.07; animation: blobFloat 12s ease-in-out infinite; }
+  .bg-blob-2 { width: 350px; height: 350px; bottom: -80px; left: -80px; background: #81d4a0; opacity: 0.06; animation: blobFloat 16s ease-in-out infinite reverse; }
+  .bg-blob-3 { width: 220px; height: 220px; top: 40%; left: 15%; background: #b39ddb; opacity: 0.05; animation: blobFloat 20s ease-in-out infinite; }
+  @keyframes blobFloat { 0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(40px,-50px) scale(1.1);} 66%{transform:translate(-30px,30px) scale(0.9);} }
+
+  body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); background-size:256px 256px; opacity:0.025; mix-blend-mode:overlay; }
+
+  .container { position: relative; z-index: 1; width: 100%; max-width: 480px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 1.8rem 1.6rem; margin-bottom: 1rem; }
+
+  /* ── SPLASH ── */
+  .splash-brand { text-align: center; margin-bottom: 1.8rem; }
+  .splash-logo-ring { width: 78px; height: 78px; border-radius: 50%; background: linear-gradient(135deg,rgba(79,195,247,0.14),rgba(129,212,160,0.10)); border: 1.5px solid rgba(79,195,247,0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.9rem; font-size: 2rem; animation: floatAnim 3s ease-in-out infinite; }
+  @keyframes floatAnim { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+  .splash-created { font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 3px; }
+  .splash-domain { font-size: 0.85rem; font-weight: 700; color: var(--accent); letter-spacing: 0.5px; }
+
+  .splash-title { font-family: 'Cormorant', serif; font-size: clamp(2rem,9vw,3rem); font-weight: 700; background: linear-gradient(135deg,#4fc3f7,#81d4a0,#b39ddb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.15; margin-bottom: 0.5rem; text-align: center; }
+  .splash-tagline { font-size: 0.83rem; color: var(--text-muted); line-height: 1.65; text-align: center; margin-bottom: 1.6rem; }
+
+  .disclaimer-box { background: rgba(255,204,128,0.06); border: 1px solid rgba(255,204,128,0.22); border-radius: 14px; padding: 1rem 1.2rem; margin-bottom: 1.4rem; display: flex; gap: 10px; align-items: flex-start; }
+  .disclaimer-icon { font-size: 0.95rem; flex-shrink: 0; margin-top: 2px; }
+  .disclaimer-text { font-size: 0.76rem; color: var(--text-muted); line-height: 1.65; }
+  .disclaimer-text strong { color: var(--amber); font-weight: 600; }
+
+  .expect-list { display: flex; flex-direction: column; gap: 9px; margin-bottom: 1.6rem; }
+  .expect-item { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--text-muted); }
+  .expect-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+  .btn-start { width: 100%; padding: 15px; background: linear-gradient(135deg,rgba(79,195,247,0.22),rgba(129,212,160,0.16)); border: 1px solid rgba(79,195,247,0.4); border-radius: 14px; color: var(--accent); font-family: 'Manrope', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; cursor: pointer; transition: all 0.25s; text-transform: uppercase; }
+  .btn-start:hover { background: linear-gradient(135deg,rgba(79,195,247,0.32),rgba(129,212,160,0.24)); border-color: rgba(79,195,247,0.65); }
+  .btn-start:active { transform: scale(0.98); }
+
+  /* ── QUIZ ── */
+  #quiz-section { display: none; }
+  .quiz-brand { text-align: center; margin-bottom: 1rem; }
+  .quiz-brand-label { font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 2px; }
+  .quiz-brand-domain { font-size: 0.78rem; font-weight: 700; color: var(--accent); }
+
+  .progress-wrap { margin-bottom: 1.4rem; }
+  .progress-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .progress-label { font-size: 0.72rem; color: var(--text-dim); font-weight: 600; letter-spacing: 1px; }
+  .progress-count { font-size: 0.72rem; color: var(--accent); font-weight: 700; }
+  .progress-bar { height: 3px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg,#4fc3f7,#81d4a0); border-radius: 2px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+  .q-text { font-family: 'Cormorant', serif; font-size: clamp(1.15rem,4vw,1.4rem); font-weight: 600; color: var(--text); line-height: 1.45; margin-bottom: 1.4rem; min-height: 60px; }
+
+  .options { display: flex; flex-direction: column; gap: 9px; margin-bottom: 1.4rem; }
+  .opt { display: flex; align-items: center; gap: 12px; padding: 13px 15px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.25s ease; -webkit-tap-highlight-color: transparent; }
+  .opt:hover { background: rgba(79,195,247,0.06); border-color: rgba(79,195,247,0.2); }
+  .opt.selected { background: rgba(79,195,247,0.1); border-color: rgba(79,195,247,0.4); }
+  .opt-radio { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
+  .opt.selected .opt-radio { background: var(--accent); border-color: var(--accent); }
+  .opt.selected .opt-radio::after { content:''; display:block; width:7px; height:7px; background:#0d1117; border-radius:50%; }
+  .opt-label { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; transition: color 0.25s; }
+  .opt.selected .opt-label { color: var(--text); }
+
+  .btn-next { width: 100%; padding: 14px; background: linear-gradient(135deg,rgba(79,195,247,0.2),rgba(129,212,160,0.15)); border: 1px solid rgba(79,195,247,0.35); border-radius: 12px; color: var(--accent); font-family: 'Manrope', sans-serif; font-size: 0.88rem; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: all 0.25s; text-transform: uppercase; }
+  .btn-next:disabled { opacity: 0.3; cursor: default; }
+  .btn-next:not(:disabled):hover { background: linear-gradient(135deg,rgba(79,195,247,0.3),rgba(129,212,160,0.22)); border-color: rgba(79,195,247,0.6); }
+  .btn-next:not(:disabled):active { transform: scale(0.98); }
+
+  /* ── RESULT ── */
+  #result-section { display: none; }
+  .result-top { text-align: center; padding: 1.4rem 1rem 1rem; margin-bottom: 0.5rem; }
+  .score-ring { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1.1rem; position: relative; }
+  .score-ring::before { content:''; position:absolute; inset:-8px; border-radius:50%; border:1px solid rgba(79,195,247,0.15); }
+  .score-num { font-family: 'Cormorant', serif; font-size: 2.6rem; font-weight: 700; line-height: 1; }
+  .score-of { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 1px; }
+  .level-badge { display: inline-block; padding: 5px 16px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .level-title { font-family: 'Cormorant', serif; font-size: 1.6rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+
+  .result-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.7; padding: 1rem 1.4rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 1rem; }
+
+  .tips-heading { font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); font-weight: 700; margin-bottom: 0.9rem; }
+  .tip { display: flex; gap: 12px; padding: 13px 14px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; transition: border-color 0.2s; }
+  .tip:hover { border-color: rgba(255,255,255,0.14); }
+  .tip-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .tip-text { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+  .tip-text strong { color: var(--text); font-weight: 600; }
+
+  /* ── CTA ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.4rem 0; }
+
+  .cta-heading { font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); font-weight: 700; margin-bottom: 0.8rem; text-align: center; }
+  .cta-intro { font-size: 0.82rem; color: var(--text-muted); line-height: 1.65; text-align: center; margin-bottom: 1.2rem; }
+  .cta-intro strong { color: var(--text); }
+
+  .cta-links { display: flex; flex-direction: column; gap: 10px; }
+
+  .cta-btn { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 14px; text-decoration: none; cursor: pointer; transition: all 0.25s; border: 1px solid; }
+  .cta-btn:active { transform: scale(0.98); }
+
+  .cta-wa { background: rgba(37,211,102,0.08); border-color: rgba(37,211,102,0.25); }
+  .cta-wa:hover { background: rgba(37,211,102,0.14); border-color: rgba(37,211,102,0.45); }
+  .cta-wa .ci { color: #25d166; font-size: 1.3rem; }
+  .cta-wa .ct strong { color: #25d166; }
+
+  .cta-web { background: rgba(79,195,247,0.07); border-color: rgba(79,195,247,0.22); }
+  .cta-web:hover { background: rgba(79,195,247,0.13); border-color: rgba(79,195,247,0.42); }
+  .cta-web .ci { color: var(--accent); font-size: 1.3rem; }
+  .cta-web .ct strong { color: var(--accent); }
+
+  .cta-portfolio { background: rgba(179,157,219,0.07); border-color: rgba(179,157,219,0.22); }
+  .cta-portfolio:hover { background: rgba(179,157,219,0.13); border-color: rgba(179,157,219,0.42); }
+  .cta-portfolio .ci { color: var(--purple); font-size: 1.3rem; }
+  .cta-portfolio .ct strong { color: var(--purple); }
+
+  .ci { flex-shrink: 0; }
+  .ct { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+  .ct strong { font-size: 0.85rem; font-weight: 700; }
+  .ct span { font-size: 0.72rem; color: var(--text-dim); }
+  .ca { margin-left: auto; color: var(--text-dim); font-size: 0.85rem; flex-shrink: 0; }
+
+  .btn-retry { width: 100%; margin-top: 0.4rem; padding: 12px; background: transparent; border: 1px solid var(--border); border-radius: 12px; color: var(--text-dim); font-family: 'Manrope', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.25s; display: block; }
+  .btn-retry:hover { border-color: rgba(255,255,255,0.15); color: var(--text-muted); background: var(--surface-2); }
+
+  .footer-note { text-align: center; font-size: 0.68rem; color: var(--text-dim); margin-top: 1.5rem; line-height: 1.7; }
+  .footer-note a { color: var(--accent); text-decoration: none; }
+  .footer-note a:hover { text-decoration: underline; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+  .fade-up { animation: fadeUp 0.4s ease forwards; }
+</style>
+</head>
+<body>
+
+<div class="bg-blob bg-blob-1"></div>
+<div class="bg-blob bg-blob-2"></div>
+<div class="bg-blob bg-blob-3"></div>
+
+<div class="container">
+
+  <!-- ════════════════════════════════ -->
+  <!--         SPLASH / START          -->
+  <!-- ════════════════════════════════ -->
+  <div id="splash-section">
+    <div class="card fade-up">
+
+      <div class="splash-brand">
+        <div class="splash-logo-ring">🧠</div>
+        <div class="splash-created">Created by</div>
+        <div class="splash-domain">penangcounsellor.com</div>
+      </div>
+
+      <div class="splash-title">Quick Stress Audit</div>
+      <p class="splash-tagline">A short self-check to help you understand where your stress level is right now — and what you can do about it.</p>
+
+      <div class="disclaimer-box">
+        <span class="disclaimer-icon">⚠️</span>
+        <div class="disclaimer-text">
+          <strong>Disclaimer:</strong> This is a simple self-reflection activity, not a real psychological assessment or clinical diagnosis. It is designed for awareness and education only, and does not replace professional evaluation. If you are experiencing significant distress, please speak with a qualified counsellor or healthcare provider.
+        </div>
+      </div>
+
+      <div class="expect-list">
+        <div class="expect-item">
+          <div class="expect-dot"></div>
+          5 short questions — takes about 2 minutes
+        </div>
+        <div class="expect-item">
+          <div class="expect-dot" style="background:var(--green)"></div>
+          Your responses are private — nothing is saved or sent anywhere
+        </div>
+        <div class="expect-item">
+          <div class="expect-dot" style="background:var(--purple)"></div>
+          You will receive your stress level and practical tips
+        </div>
+      </div>
+
+      <button class="btn-start" onclick="startQuiz()">Begin the Audit →</button>
+    </div>
+
+    <div class="footer-note">
+      &copy; <a href="https://www.penangcounsellor.com" target="_blank">penangcounsellor.com</a> &nbsp;·&nbsp; Wooi Chin Lim, Licensed Counsellor
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ -->
+  <!--              QUIZ               -->
+  <!-- ════════════════════════════════ -->
+  <div id="quiz-section">
+    <div class="quiz-brand">
+      <div class="quiz-brand-label">Created by</div>
+      <div class="quiz-brand-domain">penangcounsellor.com</div>
+    </div>
+
+    <div class="card">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Your Progress</span>
+          <span class="progress-count" id="q-count">1 / 5</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="prog-fill" style="width:20%"></div>
+        </div>
+      </div>
+      <div class="q-text fade-up" id="q-text"></div>
+      <div class="options" id="opts"></div>
+      <button class="btn-next" id="next-btn" disabled onclick="nextQ()">Next →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ -->
+  <!--             RESULT              -->
+  <!-- ════════════════════════════════ -->
+  <div id="result-section">
+
+    <div class="quiz-brand" style="text-align:center;margin-bottom:1rem;">
+      <div class="quiz-brand-label">Created by</div>
+      <div class="quiz-brand-domain">penangcounsellor.com</div>
+    </div>
+
+    <!-- Score card -->
+    <div class="card">
+      <div class="result-top fade-up">
+        <div class="score-ring" id="score-ring">
+          <span class="score-num" id="score-num"></span>
+          <span class="score-of">out of 15</span>
+        </div>
+        <div class="level-badge" id="level-badge"></div>
+        <div class="level-title" id="level-title"></div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="result-desc fade-up" id="result-desc"></div>
+
+    <!-- Tips + CTA combined card -->
+    <div class="card fade-up">
+      <div class="tips-heading">What you can do now</div>
+      <div id="tips-list"></div>
+
+      <hr class="divider">
+
+      <!-- CTA -->
+      <div class="cta-heading">Want to go deeper?</div>
+      <p class="cta-intro">This audit is a starting point. If you would like to explore your results further, get personalised guidance, or book a counselling session — <strong>Wooi Chin Lim is a Licensed Counsellor based in Penang</strong> with over 10 years of experience across counselling, education, and wellbeing.</p>
+
+      <div class="cta-links">
+
+        <a class="cta-btn cta-wa" href="https://api.whatsapp.com/send/?phone=60164156142" target="_blank" rel="noopener">
+          <span class="ci">💬</span>
+          <div class="ct">
+            <strong>Chat on WhatsApp</strong>
+            <span>Send a message — book a session or ask a question</span>
+          </div>
+          <span class="ca">↗</span>
+        </a>
+
+        <a class="cta-btn cta-web" href="https://www.penangcounsellor.com/" target="_blank" rel="noopener">
+          <span class="ci">🌐</span>
+          <div class="ct">
+            <strong>penangcounsellor.com</strong>
+            <span>Services, approach, and how to get started</span>
+          </div>
+          <span class="ca">↗</span>
+        </a>
+
+        <a class="cta-btn cta-portfolio" href="https://wooichinlim.notion.site/" target="_blank" rel="noopener">
+          <span class="ci">📋</span>
+          <div class="ct">
+            <strong>View Portfolio</strong>
+            <span>Background, training, workshops, and professional work</span>
+          </div>
+          <span class="ca">↗</span>
+        </a>
+
+      </div>
+
+      <hr class="divider">
+      <button class="btn-retry" onclick="resetQuiz()">↩ Retake the audit</button>
+    </div>
+
+    <div class="footer-note">
+      ⚠️ This is a self-reflection activity, not a clinical assessment or diagnosis.<br>
+      For professional support, please contact a licensed counsellor or healthcare provider.<br><br>
+      &copy; <a href="https://www.penangcounsellor.com" target="_blank">penangcounsellor.com</a> &nbsp;·&nbsp; Wooi Chin Lim, Licensed Counsellor
+    </div>
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  { text: "How often do you feel tired even after a full night's sleep?", opts: ["Rarely or never","Sometimes — once or twice a week","Most days","Almost every single day"] },
+  { text: "How often do you feel irritable, short-tempered, or easily upset?", opts: ["Rarely or never","Occasionally","Several times a week","Nearly every day"] },
+  { text: "How hard is it to switch off — does your mind keep running when you want to rest?", opts: ["Not hard at all — I unwind easily","Slightly difficult some nights","Often hard to slow down","I almost never fully switch off"] },
+  { text: "How much are you genuinely enjoying your daily life right now?", opts: ["Enjoying it well","Some good moments, some stress","Managing, but little real joy","Just going through the motions"] },
+  { text: "How often do you notice body signals — tight shoulders, headaches, stomach problems — that you push through and ignore?", opts: ["Rarely or never","Occasionally","Fairly often","All the time, but I carry on anyway"] }
+];
+
+const levels = [
+  {
+    min:0, max:4, label:"Low Stress", title:"You're managing well",
+    color:"#4fc3f7", badgeBg:"rgba(79,195,247,0.12)", badgeColor:"#4fc3f7",
+    desc:"Your stress level is low right now. Your body has room to rest and recover. This is a good time to build simple habits that keep you strong when life gets busier.",
+    tips:[
+      {icon:"🌱",text:"<strong>Keep doing what works.</strong> Think of 2 things you do to relax — and make sure you do them every week, not just when you have time."},
+      {icon:"💤",text:"<strong>Protect your sleep.</strong> Going to bed at the same time each night is one of the best things you can do for your mind and body."},
+      {icon:"📋",text:"<strong>Check in with yourself once a week.</strong> Just ask: 'How am I feeling?' Catching stress early makes it much easier to manage."}
+    ]
+  },
+  {
+    min:5, max:7, label:"Mild Stress", title:"A few warning signs",
+    color:"#81d4a0", badgeBg:"rgba(129,212,160,0.12)", badgeColor:"#81d4a0",
+    desc:"You are coping, but your body is working harder than it should. These signs are easy to ignore now — but if nothing changes, they often get worse over the next few months.",
+    tips:[
+      {icon:"🫁",text:"<strong>Try slow breathing before bed.</strong> Breathe in for 4 counts, hold for 4, breathe out for 4, hold for 4. Do this 3 times. It calms your body quickly."},
+      {icon:"📵",text:"<strong>Put your phone away 30 minutes before sleep.</strong> Screen light tells your brain to stay awake, making it harder to unwind."},
+      {icon:"🗣️",text:"<strong>Name one thing that has been bothering you.</strong> Just saying it out loud — to yourself or someone you trust — already helps reduce the pressure inside."}
+    ]
+  },
+  {
+    min:8, max:10, label:"Moderate Stress", title:"Your body is under pressure",
+    color:"#ffcc80", badgeBg:"rgba(255,204,128,0.12)", badgeColor:"#e6a820",
+    desc:"Several stress signals are showing up at the same time. You may look fine to others, but inside, your body is tired. When stress builds up like this, it becomes harder to think clearly and enjoy everyday life.",
+    tips:[
+      {icon:"🔋",text:"<strong>Rest is not a reward — it is something your body needs.</strong> Set aside two short breaks in your week just for yourself, even just 20 minutes each."},
+      {icon:"✋",text:"<strong>Write down your top 3 worries. Pick one.</strong> Ask: 'What is one small thing I can do about this today?' Small steps reduce big stress."},
+      {icon:"🧠",text:"<strong>When you feel overwhelmed, try this:</strong> Look around and quietly name 5 things you can see. Then think of 4 things in your life that are okay right now. This simple exercise helps calm your mind."},
+      {icon:"👥",text:"<strong>Talk to someone you trust this week.</strong> A friend, family member, or colleague. Sharing how you feel actually lowers stress hormones in your body."}
+    ]
+  },
+  {
+    min:11, max:15, label:"High Stress", title:"Your body is asking for help",
+    color:"#ef9a9a", badgeBg:"rgba(239,154,154,0.12)", badgeColor:"#ef9a9a",
+    desc:"Your stress signals are strong and happening often. This is not about being weak — your body is simply carrying too much for too long. At this level, it is important to take action now, not later.",
+    tips:[
+      {icon:"🚨",text:"<strong>Please speak to someone within the next 7 days</strong> — a counsellor, doctor, or someone you really trust. You do not have to figure this out alone."},
+      {icon:"🔻",text:"<strong>Remove or delay at least one thing from your to-do list this week.</strong> When we are overloaded, doing less is not giving up — it is the smart move."},
+      {icon:"🫁",text:"<strong>Breathe slowly, twice a day.</strong> In for 4, hold for 4, out for 4, hold for 4. Repeat 3 times. This is one of the fastest ways to calm your body down."},
+      {icon:"🛑",text:"<strong>Practice saying 'no' to one request this week.</strong> You cannot pour from an empty cup. Saying no to one thing means saying yes to your own wellbeing."},
+      {icon:"💬",text:"<strong>Asking for help is not weakness</strong> — it is the most effective thing you can do right now. Reach out to someone today."}
+    ]
+  }
+];
+
+let current = 0, answers = [];
+
+function startQuiz() {
+  document.getElementById('splash-section').style.display = 'none';
+  document.getElementById('quiz-section').style.display = 'block';
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function render() {
+  const q = questions[current];
+  const qtEl = document.getElementById('q-text');
+  qtEl.style.animation='none'; qtEl.offsetHeight; qtEl.style.animation='';
+  qtEl.className='q-text fade-up'; qtEl.textContent=q.text;
+  document.getElementById('q-count').textContent=(current+1)+' / '+questions.length;
+  document.getElementById('prog-fill').style.width=((current+1)/questions.length*100)+'%';
+  const optsEl=document.getElementById('opts'); optsEl.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const d=document.createElement('div');
+    d.className='opt'+(answers[current]===i?' selected':'');
+    d.innerHTML='<div class="opt-radio"></div><span class="opt-label">'+o+'</span>';
+    d.onclick=()=>selectOpt(i); optsEl.appendChild(d);
+  });
+  const btn=document.getElementById('next-btn');
+  btn.disabled=answers[current]===undefined;
+  btn.textContent=current===questions.length-1?'See My Result →':'Next →';
+}
+
+function selectOpt(i) {
+  answers[current]=i;
+  document.querySelectorAll('.opt').forEach((el,idx)=>{ el.classList.toggle('selected',idx===i); });
+  document.getElementById('next-btn').disabled=false;
+}
+
+function nextQ() {
+  if(answers[current]===undefined) return;
+  if(current<questions.length-1){current++;render();}
+  else showResult();
+}
+
+function showResult() {
+  const total=answers.reduce((s,v)=>s+v,0);
+  const level=levels.find(l=>total>=l.min&&total<=l.max);
+  document.getElementById('quiz-section').style.display='none';
+  document.getElementById('result-section').style.display='block';
+  document.getElementById('score-num').textContent=total;
+  document.getElementById('score-num').style.color=level.color;
+  const ring=document.getElementById('score-ring');
+  ring.style.borderColor=level.color;
+  ring.style.boxShadow='0 0 30px '+level.color+'22';
+  const badge=document.getElementById('level-badge');
+  badge.textContent=level.label;
+  badge.style.background=level.badgeBg;
+  badge.style.color=level.badgeColor;
+  badge.style.border='1px solid '+level.badgeColor+'44';
+  document.getElementById('level-title').textContent=level.title;
+  document.getElementById('result-desc').textContent=level.desc;
+  const tl=document.getElementById('tips-list');
+  tl.innerHTML=level.tips.map(t=>'<div class="tip"><span class="tip-icon">'+t.icon+'</span><span class="tip-text">'+t.text+'</span></div>').join('');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function resetQuiz() {
+  current=0; answers=[];
+  document.getElementById('result-section').style.display='none';
+  document.getElementById('splash-section').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
